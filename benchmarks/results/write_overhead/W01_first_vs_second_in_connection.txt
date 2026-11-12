@@ -1,0 +1,11 @@
+# W01 run twice in ONE new connection (each inside BEGIN ... ROLLBACK), 5 trials per database. Execution Time of the 1st and 2nd INSERT.
+practo_base  trial 1   1st INSERT   0.715 ms   2nd INSERT   0.168 ms
+practo_base  trial 2   1st INSERT   0.763 ms   2nd INSERT   0.185 ms
+practo_base  trial 3   1st INSERT   0.618 ms   2nd INSERT   0.161 ms
+practo_base  trial 4   1st INSERT   0.599 ms   2nd INSERT   0.202 ms
+practo_base  trial 5   1st INSERT   0.688 ms   2nd INSERT   0.187 ms
+practo       trial 1   1st INSERT   0.935 ms   2nd INSERT   0.196 ms
+practo       trial 2   1st INSERT   0.965 ms   2nd INSERT   0.280 ms
+practo       trial 3   1st INSERT   1.008 ms   2nd INSERT   0.353 ms
+practo       trial 4   1st INSERT   0.998 ms   2nd INSERT   0.230 ms
+practo       trial 5   1st INSERT   0.972 ms   2nd INSERT   0.216 ms

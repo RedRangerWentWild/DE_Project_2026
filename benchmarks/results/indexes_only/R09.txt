@@ -1,0 +1,78 @@
+=== R09 run 1 ===
+Limit  (cost=3318.68..3318.73 rows=20 width=44) (actual time=6.589..6.594 rows=20 loops=1)
+  Buffers: shared hit=283
+  ->  Sort  (cost=3318.68..3319.68 rows=398 width=44) (actual time=6.587..6.590 rows=20 loops=1)
+        Sort Key: (round(avg((EXTRACT(epoch FROM (consult_started_at - slot_start)) / '60'::numeric)), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=283
+        ->  HashAggregate  (cost=3289.19..3308.09 rows=398 width=44) (actual time=5.823..6.420 rows=509 loops=1)
+              Group Key: clinic_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 577kB
+              Rows Removed by Filter: 634
+              Buffers: shared hit=280
+              ->  Bitmap Heap Scan on appointments a  (cost=318.67..3209.51 rows=5312 width=20) (actual time=0.459..2.623 rows=5622 loops=1)
+                    Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Filter: (((status)::text = 'COMPLETED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                    Rows Removed by Filter: 2778
+                    Heap Blocks: exact=217
+                    Buffers: shared hit=280
+                    ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..317.34 rows=8092 width=0) (actual time=0.429..0.429 rows=8400 loops=1)
+                          Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Buffers: shared hit=63
+Planning:
+  Buffers: shared hit=240
+Planning Time: 0.724 ms
+Execution Time: 6.714 ms
+=== R09 run 2 ===
+Limit  (cost=3318.68..3318.73 rows=20 width=44) (actual time=4.763..4.767 rows=20 loops=1)
+  Buffers: shared hit=283
+  ->  Sort  (cost=3318.68..3319.68 rows=398 width=44) (actual time=4.762..4.764 rows=20 loops=1)
+        Sort Key: (round(avg((EXTRACT(epoch FROM (consult_started_at - slot_start)) / '60'::numeric)), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=283
+        ->  HashAggregate  (cost=3289.19..3308.09 rows=398 width=44) (actual time=4.272..4.643 rows=509 loops=1)
+              Group Key: clinic_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 577kB
+              Rows Removed by Filter: 634
+              Buffers: shared hit=280
+              ->  Bitmap Heap Scan on appointments a  (cost=318.67..3209.51 rows=5312 width=20) (actual time=0.479..1.985 rows=5622 loops=1)
+                    Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Filter: (((status)::text = 'COMPLETED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                    Rows Removed by Filter: 2778
+                    Heap Blocks: exact=217
+                    Buffers: shared hit=280
+                    ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..317.34 rows=8092 width=0) (actual time=0.444..0.444 rows=8400 loops=1)
+                          Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Buffers: shared hit=63
+Planning:
+  Buffers: shared hit=240
+Planning Time: 0.758 ms
+Execution Time: 4.904 ms
+=== R09 run 3 ===
+Limit  (cost=3318.68..3318.73 rows=20 width=44) (actual time=10.071..10.081 rows=20 loops=1)
+  Buffers: shared hit=283
+  ->  Sort  (cost=3318.68..3319.68 rows=398 width=44) (actual time=10.069..10.077 rows=20 loops=1)
+        Sort Key: (round(avg((EXTRACT(epoch FROM (consult_started_at - slot_start)) / '60'::numeric)), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=283
+        ->  HashAggregate  (cost=3289.19..3308.09 rows=398 width=44) (actual time=9.120..9.890 rows=509 loops=1)
+              Group Key: clinic_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 577kB
+              Rows Removed by Filter: 634
+              Buffers: shared hit=280
+              ->  Bitmap Heap Scan on appointments a  (cost=318.67..3209.51 rows=5312 width=20) (actual time=0.454..2.231 rows=5622 loops=1)
+                    Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Filter: (((status)::text = 'COMPLETED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                    Rows Removed by Filter: 2778
+                    Heap Blocks: exact=217
+                    Buffers: shared hit=280
+                    ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..317.34 rows=8092 width=0) (actual time=0.424..0.429 rows=8400 loops=1)
+                          Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Buffers: shared hit=63
+Planning:
+  Buffers: shared hit=240
+Planning Time: 0.594 ms
+Execution Time: 10.203 ms

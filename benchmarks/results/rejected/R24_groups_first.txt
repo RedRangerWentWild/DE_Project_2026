@@ -1,0 +1,142 @@
+-- Rejected alternative: R24_groups_first
+-- Find duplicate (doctor_id, slot_start) groups first, then join back. The hash aggregate over ~135,000 groups spills to disk with work_mem = 4 MB.
+-- Measured on the indexed database (sql/05_indexes.sql), EXPLAIN (ANALYZE, BUFFERS), 3 runs. Query:
+--   SELECT a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id AS other_appointment_id
+--   FROM (SELECT doctor_id, slot_start
+--         FROM appointments
+--         WHERE status <> 'CANCELLED'
+--         GROUP BY doctor_id, slot_start
+--         HAVING count(*) > 1) dup
+--   JOIN appointments a ON a.doctor_id = dup.doctor_id AND a.slot_start = dup.slot_start AND a.status <> 'CANCELLED'
+--   JOIN appointments b ON b.doctor_id = dup.doctor_id AND b.slot_start = dup.slot_start AND b.status <> 'CANCELLED'
+--                      AND b.appointment_id > a.appointment_id
+--   ORDER BY a.slot_start DESC;
+=== R24_groups_first run 1 ===
+Gather Merge  (cost=11129.06..11129.18 rows=1 width=20) (actual time=101.182..103.838 rows=559 loops=1)
+  Workers Planned: 1
+  Workers Launched: 1
+  Buffers: shared hit=11273 read=280, temp read=616 written=1320
+  ->  Sort  (cost=10129.05..10129.06 rows=1 width=20) (actual time=99.205..99.225 rows=280 loops=2)
+        Sort Key: a.slot_start DESC
+        Sort Method: quicksort  Memory: 38kB
+        Buffers: shared hit=11273 read=280, temp read=616 written=1320
+        Worker 0:  Sort Method: quicksort  Memory: 38kB
+        ->  Nested Loop  (cost=5884.61..10129.04 rows=1 width=20) (actual time=81.485..99.119 rows=280 loops=2)
+              Buffers: shared hit=11265 read=280, temp read=616 written=1320
+              ->  Hash Join  (cost=5884.19..10124.20 rows=9 width=28) (actual time=81.427..96.593 rows=552 loops=2)
+                    Hash Cond: ((a.doctor_id = appointments.doctor_id) AND (a.slot_start = appointments.slot_start))
+                    Buffers: shared hit=8166, temp read=616 written=1320
+                    ->  Parallel Seq Scan on appointments a  (cost=0.00..3822.94 rows=79441 width=16) (actual time=0.010..10.010 rows=67550 loops=2)
+                          Filter: ((status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 7450
+                          Buffers: shared hit=2720
+                    ->  Hash  (cost=5805.25..5805.25 rows=5263 width=12) (actual time=81.332..81.333 rows=549 loops=2)
+                          Buckets: 8192  Batches: 1  Memory Usage: 90kB
+                          Buffers: shared hit=5440, temp read=616 written=1320
+                          ->  HashAggregate  (cost=5607.88..5805.25 rows=5263 width=12) (actual time=59.895..81.158 rows=549 loops=2)
+                                Group Key: appointments.doctor_id, appointments.slot_start
+                                Filter: (count(*) > 1)
+                                Batches: 5  Memory Usage: 8241kB  Disk Usage: 3488kB
+                                Rows Removed by Filter: 133997
+                                Buffers: shared hit=5440, temp read=616 written=1320
+                                Worker 0:  Batches: 5  Memory Usage: 8241kB  Disk Usage: 3488kB
+                                ->  Seq Scan on appointments  (cost=0.00..4595.00 rows=135050 width=12) (actual time=0.005..22.165 rows=135100 loops=2)
+                                      Filter: ((status)::text <> 'CANCELLED'::text)
+                                      Rows Removed by Filter: 14900
+                                      Buffers: shared hit=5440
+              ->  Index Only Scan using ix_appt_slot_cover on appointments b  (cost=0.42..0.53 rows=1 width=16) (actual time=0.004..0.004 rows=1 loops=1103)
+                    Index Cond: ((slot_start = a.slot_start) AND (appointment_id > a.appointment_id))
+                    Filter: (((status)::text <> 'CANCELLED'::text) AND (a.doctor_id = doctor_id))
+                    Rows Removed by Filter: 8
+                    Heap Fetches: 0
+                    Buffers: shared hit=3099 read=280
+Planning:
+  Buffers: shared hit=277
+Planning Time: 1.063 ms
+Execution Time: 104.696 ms
+=== R24_groups_first run 2 ===
+Gather Merge  (cost=11129.06..11129.18 rows=1 width=20) (actual time=104.647..107.310 rows=559 loops=1)
+  Workers Planned: 1
+  Workers Launched: 1
+  Buffers: shared hit=11553, temp read=616 written=1320
+  ->  Sort  (cost=10129.05..10129.06 rows=1 width=20) (actual time=102.364..102.382 rows=280 loops=2)
+        Sort Key: a.slot_start DESC
+        Sort Method: quicksort  Memory: 37kB
+        Buffers: shared hit=11553, temp read=616 written=1320
+        Worker 0:  Sort Method: quicksort  Memory: 38kB
+        ->  Nested Loop  (cost=5884.61..10129.04 rows=1 width=20) (actual time=86.873..102.288 rows=280 loops=2)
+              Buffers: shared hit=11545, temp read=616 written=1320
+              ->  Hash Join  (cost=5884.19..10124.20 rows=9 width=28) (actual time=86.779..100.434 rows=552 loops=2)
+                    Hash Cond: ((a.doctor_id = appointments.doctor_id) AND (a.slot_start = appointments.slot_start))
+                    Buffers: shared hit=8166, temp read=616 written=1320
+                    ->  Parallel Seq Scan on appointments a  (cost=0.00..3822.94 rows=79441 width=16) (actual time=0.010..9.138 rows=67550 loops=2)
+                          Filter: ((status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 7450
+                          Buffers: shared hit=2720
+                    ->  Hash  (cost=5805.25..5805.25 rows=5263 width=12) (actual time=86.648..86.649 rows=549 loops=2)
+                          Buckets: 8192  Batches: 1  Memory Usage: 90kB
+                          Buffers: shared hit=5440, temp read=616 written=1320
+                          ->  HashAggregate  (cost=5607.88..5805.25 rows=5263 width=12) (actual time=66.119..86.483 rows=549 loops=2)
+                                Group Key: appointments.doctor_id, appointments.slot_start
+                                Filter: (count(*) > 1)
+                                Batches: 5  Memory Usage: 8241kB  Disk Usage: 3488kB
+                                Rows Removed by Filter: 133997
+                                Buffers: shared hit=5440, temp read=616 written=1320
+                                Worker 0:  Batches: 5  Memory Usage: 8241kB  Disk Usage: 3488kB
+                                ->  Seq Scan on appointments  (cost=0.00..4595.00 rows=135050 width=12) (actual time=0.007..24.480 rows=135100 loops=2)
+                                      Filter: ((status)::text <> 'CANCELLED'::text)
+                                      Rows Removed by Filter: 14900
+                                      Buffers: shared hit=5440
+              ->  Index Only Scan using ix_appt_slot_cover on appointments b  (cost=0.42..0.53 rows=1 width=16) (actual time=0.003..0.003 rows=1 loops=1103)
+                    Index Cond: ((slot_start = a.slot_start) AND (appointment_id > a.appointment_id))
+                    Filter: (((status)::text <> 'CANCELLED'::text) AND (a.doctor_id = doctor_id))
+                    Rows Removed by Filter: 8
+                    Heap Fetches: 0
+                    Buffers: shared hit=3379
+Planning:
+  Buffers: shared hit=277
+Planning Time: 1.232 ms
+Execution Time: 108.365 ms
+=== R24_groups_first run 3 ===
+Gather Merge  (cost=11129.06..11129.18 rows=1 width=20) (actual time=113.900..116.764 rows=559 loops=1)
+  Workers Planned: 1
+  Workers Launched: 1
+  Buffers: shared hit=11553, temp read=616 written=1320
+  ->  Sort  (cost=10129.05..10129.06 rows=1 width=20) (actual time=111.863..111.881 rows=280 loops=2)
+        Sort Key: a.slot_start DESC
+        Sort Method: quicksort  Memory: 26kB
+        Buffers: shared hit=11553, temp read=616 written=1320
+        Worker 0:  Sort Method: quicksort  Memory: 50kB
+        ->  Nested Loop  (cost=5884.61..10129.04 rows=1 width=20) (actual time=96.238..111.785 rows=280 loops=2)
+              Buffers: shared hit=11545, temp read=616 written=1320
+              ->  Hash Join  (cost=5884.19..10124.20 rows=9 width=28) (actual time=96.184..110.106 rows=552 loops=2)
+                    Hash Cond: ((a.doctor_id = appointments.doctor_id) AND (a.slot_start = appointments.slot_start))
+                    Buffers: shared hit=8166, temp read=616 written=1320
+                    ->  Parallel Seq Scan on appointments a  (cost=0.00..3822.94 rows=79441 width=16) (actual time=0.010..9.247 rows=67550 loops=2)
+                          Filter: ((status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 7450
+                          Buffers: shared hit=2720
+                    ->  Hash  (cost=5805.25..5805.25 rows=5263 width=12) (actual time=96.075..96.076 rows=549 loops=2)
+                          Buckets: 8192  Batches: 1  Memory Usage: 90kB
+                          Buffers: shared hit=5440, temp read=616 written=1320
+                          ->  HashAggregate  (cost=5607.88..5805.25 rows=5263 width=12) (actual time=74.528..95.906 rows=549 loops=2)
+                                Group Key: appointments.doctor_id, appointments.slot_start
+                                Filter: (count(*) > 1)
+                                Batches: 5  Memory Usage: 8241kB  Disk Usage: 3488kB
+                                Rows Removed by Filter: 133997
+                                Buffers: shared hit=5440, temp read=616 written=1320
+                                Worker 0:  Batches: 5  Memory Usage: 8241kB  Disk Usage: 3488kB
+                                ->  Seq Scan on appointments  (cost=0.00..4595.00 rows=135050 width=12) (actual time=0.006..28.807 rows=135100 loops=2)
+                                      Filter: ((status)::text <> 'CANCELLED'::text)
+                                      Rows Removed by Filter: 14900
+                                      Buffers: shared hit=5440
+              ->  Index Only Scan using ix_appt_slot_cover on appointments b  (cost=0.42..0.53 rows=1 width=16) (actual time=0.002..0.003 rows=1 loops=1103)
+                    Index Cond: ((slot_start = a.slot_start) AND (appointment_id > a.appointment_id))
+                    Filter: (((status)::text <> 'CANCELLED'::text) AND (a.doctor_id = doctor_id))
+                    Rows Removed by Filter: 8
+                    Heap Fetches: 0
+                    Buffers: shared hit=3379
+Planning:
+  Buffers: shared hit=277
+Planning Time: 1.923 ms
+Execution Time: 117.804 ms

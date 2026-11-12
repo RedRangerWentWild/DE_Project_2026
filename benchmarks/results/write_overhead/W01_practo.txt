@@ -1,0 +1,18 @@
+# W01 on practo (with sql/05_indexes.sql), 500 transactions, one connection; the statement runs inside BEGIN ... ROLLBACK
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+transaction type: /tmp/claude-0/-home-user/dc4f4dee-c1da-5209-a13b-9c34ae1ba663/scratchpad/de/pgb/W01.sql
+scaling factor: 1
+query mode: simple
+number of clients: 1
+number of threads: 1
+maximum number of tries: 1
+number of transactions per client: 500
+number of transactions actually processed: 500/500
+number of failed transactions: 0 (0.000%)
+latency average = 0.347 ms
+initial connection time = 2.058 ms
+tps = 2881.213337 (without initial connection time)
+statement latencies in milliseconds and failures:
+         0.032           0  BEGIN;
+         0.263           0  INSERT INTO appointments (appointment_id, patient_id, doctor_id, clinic_id, consult_type, booked_at, slot_start, slot_end,     
+         0.052           0  ROLLBACK;

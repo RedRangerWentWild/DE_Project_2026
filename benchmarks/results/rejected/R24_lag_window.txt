@@ -1,0 +1,128 @@
+-- Rejected alternative: R24_lag_window
+-- One ordered pass with lag() over ix_appt_doctor_slot. Correct and index-only, but the window function over 135,100 rows costs about as much as the original join.
+-- Measured on the indexed database (sql/05_indexes.sql), EXPLAIN (ANALYZE, BUFFERS), 3 runs. Query:
+--   SELECT a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id AS other_appointment_id
+--   FROM (SELECT DISTINCT doctor_id, slot_start
+--         FROM (SELECT doctor_id, slot_start,
+--                      lag(slot_start) OVER (PARTITION BY doctor_id ORDER BY slot_start) AS prev_slot
+--               FROM appointments
+--               WHERE status <> 'CANCELLED') w
+--         WHERE prev_slot = slot_start) dup
+--   JOIN appointments a ON a.doctor_id = dup.doctor_id AND a.slot_start = dup.slot_start AND a.status <> 'CANCELLED'
+--   JOIN appointments b ON b.doctor_id = dup.doctor_id AND b.slot_start = dup.slot_start AND b.status <> 'CANCELLED'
+--                      AND b.appointment_id > a.appointment_id
+--   ORDER BY a.slot_start DESC;
+=== R24_lag_window run 1 ===
+Sort  (cost=14839.46..14839.47 rows=1 width=20) (actual time=81.941..81.986 rows=559 loops=1)
+  Sort Key: a.slot_start DESC
+  Sort Method: quicksort  Memory: 51kB
+  Buffers: shared hit=5977 read=541
+  ->  Nested Loop  (cost=1.26..14839.45 rows=1 width=20) (actual time=0.135..81.762 rows=559 loops=1)
+        Buffers: shared hit=5974 read=541
+        ->  Nested Loop  (cost=0.84..14838.38 rows=2 width=28) (actual time=0.124..79.115 rows=1103 loops=1)
+              Buffers: shared hit=2597 read=541
+              ->  Unique  (cost=0.42..12380.30 rows=661 width=12) (actual time=0.105..75.864 rows=549 loops=1)
+                    Buffers: shared hit=885 read=532
+                    ->  Subquery Scan on w  (cost=0.42..12376.92 rows=675 width=12) (actual time=0.104..75.741 rows=554 loops=1)
+                          Filter: (w.prev_slot = w.slot_start)
+                          Rows Removed by Filter: 134546
+                          Buffers: shared hit=885 read=532
+                          ->  WindowAgg  (cost=0.42..10688.80 rows=135050 width=20) (actual time=0.022..68.459 rows=135100 loops=1)
+                                Buffers: shared hit=885 read=532
+                                ->  Index Only Scan using ix_appt_doctor_slot on appointments  (cost=0.42..8325.42 rows=135050 width=12) (actual time=0.011..23.688 rows=135100 loops=1)
+                                      Filter: ((status)::text <> 'CANCELLED'::text)
+                                      Rows Removed by Filter: 14900
+                                      Heap Fetches: 0
+                                      Buffers: shared hit=885 read=532
+              ->  Index Only Scan using ix_appt_slot_cover on appointments a  (cost=0.42..3.71 rows=1 width=16) (actual time=0.004..0.005 rows=2 loops=549)
+                    Index Cond: (slot_start = w.slot_start)
+                    Filter: (((status)::text <> 'CANCELLED'::text) AND (w.doctor_id = doctor_id))
+                    Rows Removed by Filter: 18
+                    Heap Fetches: 0
+                    Buffers: shared hit=1712 read=9
+        ->  Index Only Scan using ix_appt_slot_cover on appointments b  (cost=0.42..0.53 rows=1 width=16) (actual time=0.002..0.002 rows=1 loops=1103)
+              Index Cond: ((slot_start = a.slot_start) AND (appointment_id > a.appointment_id))
+              Filter: (((status)::text <> 'CANCELLED'::text) AND (a.doctor_id = doctor_id))
+              Rows Removed by Filter: 8
+              Heap Fetches: 0
+              Buffers: shared hit=3377
+Planning:
+  Buffers: shared hit=268
+Planning Time: 0.945 ms
+Execution Time: 82.081 ms
+=== R24_lag_window run 2 ===
+Sort  (cost=14839.46..14839.47 rows=1 width=20) (actual time=76.784..76.830 rows=559 loops=1)
+  Sort Key: a.slot_start DESC
+  Sort Method: quicksort  Memory: 51kB
+  Buffers: shared hit=6518
+  ->  Nested Loop  (cost=1.26..14839.45 rows=1 width=20) (actual time=0.142..76.611 rows=559 loops=1)
+        Buffers: shared hit=6515
+        ->  Nested Loop  (cost=0.84..14838.38 rows=2 width=28) (actual time=0.121..74.031 rows=1103 loops=1)
+              Buffers: shared hit=3138
+              ->  Unique  (cost=0.42..12380.30 rows=661 width=12) (actual time=0.103..70.857 rows=549 loops=1)
+                    Buffers: shared hit=1417
+                    ->  Subquery Scan on w  (cost=0.42..12376.92 rows=675 width=12) (actual time=0.102..70.739 rows=554 loops=1)
+                          Filter: (w.prev_slot = w.slot_start)
+                          Rows Removed by Filter: 134546
+                          Buffers: shared hit=1417
+                          ->  WindowAgg  (cost=0.42..10688.80 rows=135050 width=20) (actual time=0.023..63.805 rows=135100 loops=1)
+                                Buffers: shared hit=1417
+                                ->  Index Only Scan using ix_appt_doctor_slot on appointments  (cost=0.42..8325.42 rows=135050 width=12) (actual time=0.012..21.770 rows=135100 loops=1)
+                                      Filter: ((status)::text <> 'CANCELLED'::text)
+                                      Rows Removed by Filter: 14900
+                                      Heap Fetches: 0
+                                      Buffers: shared hit=1417
+              ->  Index Only Scan using ix_appt_slot_cover on appointments a  (cost=0.42..3.71 rows=1 width=16) (actual time=0.004..0.005 rows=2 loops=549)
+                    Index Cond: (slot_start = w.slot_start)
+                    Filter: (((status)::text <> 'CANCELLED'::text) AND (w.doctor_id = doctor_id))
+                    Rows Removed by Filter: 18
+                    Heap Fetches: 0
+                    Buffers: shared hit=1721
+        ->  Index Only Scan using ix_appt_slot_cover on appointments b  (cost=0.42..0.53 rows=1 width=16) (actual time=0.002..0.002 rows=1 loops=1103)
+              Index Cond: ((slot_start = a.slot_start) AND (appointment_id > a.appointment_id))
+              Filter: (((status)::text <> 'CANCELLED'::text) AND (a.doctor_id = doctor_id))
+              Rows Removed by Filter: 8
+              Heap Fetches: 0
+              Buffers: shared hit=3377
+Planning:
+  Buffers: shared hit=268
+Planning Time: 0.995 ms
+Execution Time: 76.925 ms
+=== R24_lag_window run 3 ===
+Sort  (cost=14839.46..14839.47 rows=1 width=20) (actual time=78.316..78.361 rows=559 loops=1)
+  Sort Key: a.slot_start DESC
+  Sort Method: quicksort  Memory: 51kB
+  Buffers: shared hit=6518
+  ->  Nested Loop  (cost=1.26..14839.45 rows=1 width=20) (actual time=0.158..78.113 rows=559 loops=1)
+        Buffers: shared hit=6515
+        ->  Nested Loop  (cost=0.84..14838.38 rows=2 width=28) (actual time=0.147..75.491 rows=1103 loops=1)
+              Buffers: shared hit=3138
+              ->  Unique  (cost=0.42..12380.30 rows=661 width=12) (actual time=0.129..72.288 rows=549 loops=1)
+                    Buffers: shared hit=1417
+                    ->  Subquery Scan on w  (cost=0.42..12376.92 rows=675 width=12) (actual time=0.129..72.169 rows=554 loops=1)
+                          Filter: (w.prev_slot = w.slot_start)
+                          Rows Removed by Filter: 134546
+                          Buffers: shared hit=1417
+                          ->  WindowAgg  (cost=0.42..10688.80 rows=135050 width=20) (actual time=0.022..64.976 rows=135100 loops=1)
+                                Buffers: shared hit=1417
+                                ->  Index Only Scan using ix_appt_doctor_slot on appointments  (cost=0.42..8325.42 rows=135050 width=12) (actual time=0.012..21.613 rows=135100 loops=1)
+                                      Filter: ((status)::text <> 'CANCELLED'::text)
+                                      Rows Removed by Filter: 14900
+                                      Heap Fetches: 0
+                                      Buffers: shared hit=1417
+              ->  Index Only Scan using ix_appt_slot_cover on appointments a  (cost=0.42..3.71 rows=1 width=16) (actual time=0.004..0.005 rows=2 loops=549)
+                    Index Cond: (slot_start = w.slot_start)
+                    Filter: (((status)::text <> 'CANCELLED'::text) AND (w.doctor_id = doctor_id))
+                    Rows Removed by Filter: 18
+                    Heap Fetches: 0
+                    Buffers: shared hit=1721
+        ->  Index Only Scan using ix_appt_slot_cover on appointments b  (cost=0.42..0.53 rows=1 width=16) (actual time=0.002..0.002 rows=1 loops=1103)
+              Index Cond: ((slot_start = a.slot_start) AND (appointment_id > a.appointment_id))
+              Filter: (((status)::text <> 'CANCELLED'::text) AND (a.doctor_id = doctor_id))
+              Rows Removed by Filter: 8
+              Heap Fetches: 0
+              Buffers: shared hit=3377
+Planning:
+  Buffers: shared hit=268
+Planning Time: 0.983 ms
+Execution Time: 78.452 ms

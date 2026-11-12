@@ -1,0 +1,155 @@
+=== R18 run 1 ===
+Sort  (cost=836.16..837.06 rows=360 width=76) (actual time=5.753..5.772 rows=360 loops=1)
+  Sort Key: d.consultation_fee, d.doctor_id
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=302
+  ->  Hash Semi Join  (cost=696.98..820.88 rows=360 width=76) (actual time=4.811..5.487 rows=360 loops=1)
+        Hash Cond: (d.doctor_id = sc.doctor_id)
+        Buffers: shared hit=296
+        ->  Seq Scan on doctors d  (cost=0.00..118.50 rows=360 width=76) (actual time=0.007..0.601 rows=360 loops=1)
+              Filter: ('Tamil'::text = ANY (languages))
+              Rows Removed by Filter: 2640
+              Buffers: shared hit=51
+        ->  Hash  (cost=651.23..651.23 rows=3660 width=4) (actual time=4.785..4.787 rows=2880 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 134kB
+              Buffers: shared hit=245
+              ->  Hash Join  (cost=41.00..651.23 rows=3660 width=4) (actual time=0.144..4.348 rows=2880 loops=1)
+                    Hash Cond: (sc.clinic_id = c.clinic_id)
+                    Buffers: shared hit=245
+                    ->  Seq Scan on doctor_schedules sc  (cost=0.00..529.99 rows=30499 width=8) (actual time=0.005..1.808 rows=30499 loops=1)
+                          Buffers: shared hit=225
+                    ->  Hash  (cost=38.75..38.75 rows=180 width=4) (actual time=0.118..0.119 rows=180 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..38.75 rows=180 width=4) (actual time=0.005..0.092 rows=180 loops=1)
+                                Filter: (city_id = 5)
+                                Rows Removed by Filter: 1320
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=300
+Planning Time: 0.739 ms
+Execution Time: 5.850 ms
+=== R18 run 2 ===
+Sort  (cost=836.16..837.06 rows=360 width=76) (actual time=5.447..5.464 rows=360 loops=1)
+  Sort Key: d.consultation_fee, d.doctor_id
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=302
+  ->  Hash Semi Join  (cost=696.98..820.88 rows=360 width=76) (actual time=4.531..5.189 rows=360 loops=1)
+        Hash Cond: (d.doctor_id = sc.doctor_id)
+        Buffers: shared hit=296
+        ->  Seq Scan on doctors d  (cost=0.00..118.50 rows=360 width=76) (actual time=0.006..0.594 rows=360 loops=1)
+              Filter: ('Tamil'::text = ANY (languages))
+              Rows Removed by Filter: 2640
+              Buffers: shared hit=51
+        ->  Hash  (cost=651.23..651.23 rows=3660 width=4) (actual time=4.507..4.509 rows=2880 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 134kB
+              Buffers: shared hit=245
+              ->  Hash Join  (cost=41.00..651.23 rows=3660 width=4) (actual time=0.155..4.220 rows=2880 loops=1)
+                    Hash Cond: (sc.clinic_id = c.clinic_id)
+                    Buffers: shared hit=245
+                    ->  Seq Scan on doctor_schedules sc  (cost=0.00..529.99 rows=30499 width=8) (actual time=0.004..1.783 rows=30499 loops=1)
+                          Buffers: shared hit=225
+                    ->  Hash  (cost=38.75..38.75 rows=180 width=4) (actual time=0.131..0.132 rows=180 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..38.75 rows=180 width=4) (actual time=0.005..0.100 rows=180 loops=1)
+                                Filter: (city_id = 5)
+                                Rows Removed by Filter: 1320
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=300
+Planning Time: 0.721 ms
+Execution Time: 5.542 ms
+=== R18 run 3 ===
+Sort  (cost=836.16..837.06 rows=360 width=76) (actual time=5.610..5.627 rows=360 loops=1)
+  Sort Key: d.consultation_fee, d.doctor_id
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=302
+  ->  Hash Semi Join  (cost=696.98..820.88 rows=360 width=76) (actual time=4.692..5.346 rows=360 loops=1)
+        Hash Cond: (d.doctor_id = sc.doctor_id)
+        Buffers: shared hit=296
+        ->  Seq Scan on doctors d  (cost=0.00..118.50 rows=360 width=76) (actual time=0.007..0.598 rows=360 loops=1)
+              Filter: ('Tamil'::text = ANY (languages))
+              Rows Removed by Filter: 2640
+              Buffers: shared hit=51
+        ->  Hash  (cost=651.23..651.23 rows=3660 width=4) (actual time=4.666..4.668 rows=2880 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 134kB
+              Buffers: shared hit=245
+              ->  Hash Join  (cost=41.00..651.23 rows=3660 width=4) (actual time=0.147..4.364 rows=2880 loops=1)
+                    Hash Cond: (sc.clinic_id = c.clinic_id)
+                    Buffers: shared hit=245
+                    ->  Seq Scan on doctor_schedules sc  (cost=0.00..529.99 rows=30499 width=8) (actual time=0.005..1.815 rows=30499 loops=1)
+                          Buffers: shared hit=225
+                    ->  Hash  (cost=38.75..38.75 rows=180 width=4) (actual time=0.119..0.120 rows=180 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..38.75 rows=180 width=4) (actual time=0.005..0.095 rows=180 loops=1)
+                                Filter: (city_id = 5)
+                                Rows Removed by Filter: 1320
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=300
+Planning Time: 0.727 ms
+Execution Time: 5.717 ms
+=== R18 run 4 ===
+Sort  (cost=836.16..837.06 rows=360 width=76) (actual time=6.079..6.099 rows=360 loops=1)
+  Sort Key: d.consultation_fee, d.doctor_id
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=302
+  ->  Hash Semi Join  (cost=696.98..820.88 rows=360 width=76) (actual time=5.028..5.795 rows=360 loops=1)
+        Hash Cond: (d.doctor_id = sc.doctor_id)
+        Buffers: shared hit=296
+        ->  Seq Scan on doctors d  (cost=0.00..118.50 rows=360 width=76) (actual time=0.007..0.699 rows=360 loops=1)
+              Filter: ('Tamil'::text = ANY (languages))
+              Rows Removed by Filter: 2640
+              Buffers: shared hit=51
+        ->  Hash  (cost=651.23..651.23 rows=3660 width=4) (actual time=5.000..5.003 rows=2880 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 134kB
+              Buffers: shared hit=245
+              ->  Hash Join  (cost=41.00..651.23 rows=3660 width=4) (actual time=0.156..4.681 rows=2880 loops=1)
+                    Hash Cond: (sc.clinic_id = c.clinic_id)
+                    Buffers: shared hit=245
+                    ->  Seq Scan on doctor_schedules sc  (cost=0.00..529.99 rows=30499 width=8) (actual time=0.005..1.978 rows=30499 loops=1)
+                          Buffers: shared hit=225
+                    ->  Hash  (cost=38.75..38.75 rows=180 width=4) (actual time=0.128..0.130 rows=180 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..38.75 rows=180 width=4) (actual time=0.006..0.102 rows=180 loops=1)
+                                Filter: (city_id = 5)
+                                Rows Removed by Filter: 1320
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=300
+Planning Time: 0.823 ms
+Execution Time: 6.185 ms
+=== R18 run 5 ===
+Sort  (cost=836.16..837.06 rows=360 width=76) (actual time=5.988..6.007 rows=360 loops=1)
+  Sort Key: d.consultation_fee, d.doctor_id
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=302
+  ->  Hash Semi Join  (cost=696.98..820.88 rows=360 width=76) (actual time=4.997..5.678 rows=360 loops=1)
+        Hash Cond: (d.doctor_id = sc.doctor_id)
+        Buffers: shared hit=296
+        ->  Seq Scan on doctors d  (cost=0.00..118.50 rows=360 width=76) (actual time=0.006..0.613 rows=360 loops=1)
+              Filter: ('Tamil'::text = ANY (languages))
+              Rows Removed by Filter: 2640
+              Buffers: shared hit=51
+        ->  Hash  (cost=651.23..651.23 rows=3660 width=4) (actual time=4.972..4.974 rows=2880 loops=1)
+              Buckets: 4096  Batches: 1  Memory Usage: 134kB
+              Buffers: shared hit=245
+              ->  Hash Join  (cost=41.00..651.23 rows=3660 width=4) (actual time=0.138..4.656 rows=2880 loops=1)
+                    Hash Cond: (sc.clinic_id = c.clinic_id)
+                    Buffers: shared hit=245
+                    ->  Seq Scan on doctor_schedules sc  (cost=0.00..529.99 rows=30499 width=8) (actual time=0.005..1.915 rows=30499 loops=1)
+                          Buffers: shared hit=225
+                    ->  Hash  (cost=38.75..38.75 rows=180 width=4) (actual time=0.112..0.113 rows=180 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..38.75 rows=180 width=4) (actual time=0.005..0.089 rows=180 loops=1)
+                                Filter: (city_id = 5)
+                                Rows Removed by Filter: 1320
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=300
+Planning Time: 0.714 ms
+Execution Time: 6.091 ms

@@ -1,0 +1,160 @@
+=== R16 run 1 ===
+Limit  (cost=3382.88..3382.93 rows=20 width=70) (actual time=4.984..4.989 rows=20 loops=1)
+  Buffers: shared hit=303
+  ->  Sort  (cost=3382.88..3386.63 rows=1500 width=70) (actual time=4.983..4.986 rows=20 loops=1)
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=303
+        ->  HashAggregate  (cost=3324.22..3342.97 rows=1500 width=70) (actual time=4.514..4.762 rows=1129 loops=1)
+              Group Key: c.clinic_id
+              Batches: 1  Memory Usage: 577kB
+              Buffers: shared hit=300
+              ->  Hash Join  (cost=389.05..3276.15 rows=6409 width=35) (actual time=0.812..3.279 rows=4948 loops=1)
+                    Hash Cond: (a.clinic_id = c.clinic_id)
+                    Buffers: shared hit=300
+                    ->  Bitmap Heap Scan on appointments a  (cost=335.30..3205.54 rows=6409 width=9) (actual time=0.463..2.092 rows=6362 loops=1)
+                          Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Filter: ((payment_status)::text = 'PAID'::text)
+                          Rows Removed by Filter: 2038
+                          Heap Blocks: exact=217
+                          Buffers: shared hit=280
+                          ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..333.70 rows=8528 width=0) (actual time=0.433..0.433 rows=8400 loops=1)
+                                Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                Buffers: shared hit=63
+                    ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.335..0.335 rows=1500 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 108kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.006..0.139 rows=1500 loops=1)
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=303
+Planning Time: 0.767 ms
+Execution Time: 5.111 ms
+=== R16 run 2 ===
+Limit  (cost=3382.88..3382.93 rows=20 width=70) (actual time=5.300..5.305 rows=20 loops=1)
+  Buffers: shared hit=303
+  ->  Sort  (cost=3382.88..3386.63 rows=1500 width=70) (actual time=5.298..5.301 rows=20 loops=1)
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=303
+        ->  HashAggregate  (cost=3324.22..3342.97 rows=1500 width=70) (actual time=4.834..5.068 rows=1129 loops=1)
+              Group Key: c.clinic_id
+              Batches: 1  Memory Usage: 577kB
+              Buffers: shared hit=300
+              ->  Hash Join  (cost=389.05..3276.15 rows=6409 width=35) (actual time=0.910..3.509 rows=4948 loops=1)
+                    Hash Cond: (a.clinic_id = c.clinic_id)
+                    Buffers: shared hit=300
+                    ->  Bitmap Heap Scan on appointments a  (cost=335.30..3205.54 rows=6409 width=9) (actual time=0.499..2.163 rows=6362 loops=1)
+                          Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Filter: ((payment_status)::text = 'PAID'::text)
+                          Rows Removed by Filter: 2038
+                          Heap Blocks: exact=217
+                          Buffers: shared hit=280
+                          ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..333.70 rows=8528 width=0) (actual time=0.463..0.463 rows=8400 loops=1)
+                                Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                Buffers: shared hit=63
+                    ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.385..0.386 rows=1500 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 108kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.007..0.178 rows=1500 loops=1)
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=303
+Planning Time: 0.809 ms
+Execution Time: 5.431 ms
+=== R16 run 3 ===
+Limit  (cost=3382.88..3382.93 rows=20 width=70) (actual time=5.431..5.437 rows=20 loops=1)
+  Buffers: shared hit=303
+  ->  Sort  (cost=3382.88..3386.63 rows=1500 width=70) (actual time=5.430..5.434 rows=20 loops=1)
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=303
+        ->  HashAggregate  (cost=3324.22..3342.97 rows=1500 width=70) (actual time=4.982..5.204 rows=1129 loops=1)
+              Group Key: c.clinic_id
+              Batches: 1  Memory Usage: 577kB
+              Buffers: shared hit=300
+              ->  Hash Join  (cost=389.05..3276.15 rows=6409 width=35) (actual time=1.029..3.628 rows=4948 loops=1)
+                    Hash Cond: (a.clinic_id = c.clinic_id)
+                    Buffers: shared hit=300
+                    ->  Bitmap Heap Scan on appointments a  (cost=335.30..3205.54 rows=6409 width=9) (actual time=0.516..2.165 rows=6362 loops=1)
+                          Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Filter: ((payment_status)::text = 'PAID'::text)
+                          Rows Removed by Filter: 2038
+                          Heap Blocks: exact=217
+                          Buffers: shared hit=280
+                          ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..333.70 rows=8528 width=0) (actual time=0.483..0.483 rows=8400 loops=1)
+                                Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                Buffers: shared hit=63
+                    ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.496..0.497 rows=1500 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 108kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.006..0.178 rows=1500 loops=1)
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=303
+Planning Time: 0.785 ms
+Execution Time: 5.579 ms
+=== R16 run 4 ===
+Limit  (cost=3382.88..3382.93 rows=20 width=70) (actual time=5.082..5.087 rows=20 loops=1)
+  Buffers: shared hit=303
+  ->  Sort  (cost=3382.88..3386.63 rows=1500 width=70) (actual time=5.081..5.084 rows=20 loops=1)
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=303
+        ->  HashAggregate  (cost=3324.22..3342.97 rows=1500 width=70) (actual time=4.611..4.851 rows=1129 loops=1)
+              Group Key: c.clinic_id
+              Batches: 1  Memory Usage: 577kB
+              Buffers: shared hit=300
+              ->  Hash Join  (cost=389.05..3276.15 rows=6409 width=35) (actual time=0.857..3.354 rows=4948 loops=1)
+                    Hash Cond: (a.clinic_id = c.clinic_id)
+                    Buffers: shared hit=300
+                    ->  Bitmap Heap Scan on appointments a  (cost=335.30..3205.54 rows=6409 width=9) (actual time=0.505..2.101 rows=6362 loops=1)
+                          Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Filter: ((payment_status)::text = 'PAID'::text)
+                          Rows Removed by Filter: 2038
+                          Heap Blocks: exact=217
+                          Buffers: shared hit=280
+                          ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..333.70 rows=8528 width=0) (actual time=0.474..0.474 rows=8400 loops=1)
+                                Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                Buffers: shared hit=63
+                    ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.336..0.337 rows=1500 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 108kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.006..0.139 rows=1500 loops=1)
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=303
+Planning Time: 0.748 ms
+Execution Time: 5.222 ms
+=== R16 run 5 ===
+Limit  (cost=3382.88..3382.93 rows=20 width=70) (actual time=6.458..6.463 rows=20 loops=1)
+  Buffers: shared hit=303
+  ->  Sort  (cost=3382.88..3386.63 rows=1500 width=70) (actual time=6.456..6.459 rows=20 loops=1)
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=303
+        ->  HashAggregate  (cost=3324.22..3342.97 rows=1500 width=70) (actual time=5.960..6.214 rows=1129 loops=1)
+              Group Key: c.clinic_id
+              Batches: 1  Memory Usage: 577kB
+              Buffers: shared hit=300
+              ->  Hash Join  (cost=389.05..3276.15 rows=6409 width=35) (actual time=0.857..4.106 rows=4948 loops=1)
+                    Hash Cond: (a.clinic_id = c.clinic_id)
+                    Buffers: shared hit=300
+                    ->  Bitmap Heap Scan on appointments a  (cost=335.30..3205.54 rows=6409 width=9) (actual time=0.467..2.286 rows=6362 loops=1)
+                          Recheck Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                          Filter: ((payment_status)::text = 'PAID'::text)
+                          Rows Removed by Filter: 2038
+                          Heap Blocks: exact=217
+                          Buffers: shared hit=280
+                          ->  Bitmap Index Scan on ix_appt_slot_cover  (cost=0.00..333.70 rows=8528 width=0) (actual time=0.436..0.436 rows=8400 loops=1)
+                                Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                Buffers: shared hit=63
+                    ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.375..0.376 rows=1500 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 108kB
+                          Buffers: shared hit=20
+                          ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.006..0.146 rows=1500 loops=1)
+                                Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=303
+Planning Time: 0.737 ms
+Execution Time: 6.586 ms

@@ -1,0 +1,85 @@
+=== R12 run 1 ===
+Sort  (cost=4427.91..4466.79 rows=15552 width=25) (actual time=19.660..19.662 rows=14 loops=1)
+  Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=765
+  ->  HashAggregate  (cost=3150.72..3345.12 rows=15552 width=25) (actual time=19.514..19.623 rows=14 loops=1)
+        Group Key: date_trunc('month'::text, slot_start), consult_type
+        Batches: 1  Memory Usage: 793kB
+        Buffers: shared hit=759
+        ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.42..2762.85 rows=51716 width=17) (actual time=0.019..12.325 rows=51501 loops=1)
+              Index Cond: ((slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2027-01-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Fetches: 480
+              Buffers: shared hit=759
+Planning:
+  Buffers: shared hit=201
+Planning Time: 1.011 ms
+Execution Time: 20.298 ms
+=== R12 run 2 ===
+Sort  (cost=4427.91..4466.79 rows=15552 width=25) (actual time=17.604..17.605 rows=14 loops=1)
+  Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=765
+  ->  HashAggregate  (cost=3150.72..3345.12 rows=15552 width=25) (actual time=17.462..17.572 rows=14 loops=1)
+        Group Key: date_trunc('month'::text, slot_start), consult_type
+        Batches: 1  Memory Usage: 793kB
+        Buffers: shared hit=759
+        ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.42..2762.85 rows=51716 width=17) (actual time=0.017..11.151 rows=51501 loops=1)
+              Index Cond: ((slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2027-01-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Fetches: 480
+              Buffers: shared hit=759
+Planning:
+  Buffers: shared hit=201
+Planning Time: 0.498 ms
+Execution Time: 18.037 ms
+=== R12 run 3 ===
+Sort  (cost=4427.91..4466.79 rows=15552 width=25) (actual time=20.634..20.636 rows=14 loops=1)
+  Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=765
+  ->  HashAggregate  (cost=3150.72..3345.12 rows=15552 width=25) (actual time=20.492..20.590 rows=14 loops=1)
+        Group Key: date_trunc('month'::text, slot_start), consult_type
+        Batches: 1  Memory Usage: 793kB
+        Buffers: shared hit=759
+        ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.42..2762.85 rows=51716 width=17) (actual time=0.023..13.013 rows=51501 loops=1)
+              Index Cond: ((slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2027-01-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Fetches: 480
+              Buffers: shared hit=759
+Planning:
+  Buffers: shared hit=201
+Planning Time: 0.509 ms
+Execution Time: 21.138 ms
+=== R12 run 4 ===
+Sort  (cost=4427.91..4466.79 rows=15552 width=25) (actual time=24.055..24.056 rows=14 loops=1)
+  Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=765
+  ->  HashAggregate  (cost=3150.72..3345.12 rows=15552 width=25) (actual time=23.917..24.015 rows=14 loops=1)
+        Group Key: date_trunc('month'::text, slot_start), consult_type
+        Batches: 1  Memory Usage: 793kB
+        Buffers: shared hit=759
+        ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.42..2762.85 rows=51716 width=17) (actual time=0.020..15.225 rows=51501 loops=1)
+              Index Cond: ((slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2027-01-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Fetches: 480
+              Buffers: shared hit=759
+Planning:
+  Buffers: shared hit=201
+Planning Time: 0.464 ms
+Execution Time: 24.552 ms
+=== R12 run 5 ===
+Sort  (cost=4427.91..4466.79 rows=15552 width=25) (actual time=17.637..17.639 rows=14 loops=1)
+  Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=765
+  ->  HashAggregate  (cost=3150.72..3345.12 rows=15552 width=25) (actual time=17.509..17.603 rows=14 loops=1)
+        Group Key: date_trunc('month'::text, slot_start), consult_type
+        Batches: 1  Memory Usage: 793kB
+        Buffers: shared hit=759
+        ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.42..2762.85 rows=51716 width=17) (actual time=0.017..11.200 rows=51501 loops=1)
+              Index Cond: ((slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2027-01-01 00:00:00+05:30'::timestamp with time zone))
+              Heap Fetches: 480
+              Buffers: shared hit=759
+Planning:
+  Buffers: shared hit=201
+Planning Time: 0.528 ms
+Execution Time: 18.081 ms

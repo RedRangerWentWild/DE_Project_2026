@@ -1,0 +1,140 @@
+=== R04 run 1 ===
+Sort  (cost=36.67..36.67 rows=1 width=63) (actual time=0.135..0.137 rows=2 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=37
+  ->  Nested Loop Left Join  (cost=5.01..36.66 rows=1 width=63) (actual time=0.081..0.111 rows=2 loops=1)
+        Buffers: shared hit=34
+        ->  Nested Loop  (cost=4.73..28.35 rows=1 width=41) (actual time=0.074..0.098 rows=2 loops=1)
+              Buffers: shared hit=28
+              ->  Bitmap Heap Scan on appointments a  (cost=4.45..20.05 rows=1 width=29) (actual time=0.060..0.076 rows=2 loops=1)
+                    Recheck Cond: (patient_id = 90)
+                    Filter: ((status)::text = 'BOOKED'::text)
+                    Rows Removed by Filter: 7
+                    Heap Blocks: exact=19
+                    Buffers: shared hit=22
+                    ->  Bitmap Index Scan on ix_appt_patient  (cost=0.00..4.45 rows=4 width=0) (actual time=0.014..0.014 rows=19 loops=1)
+                          Index Cond: (patient_id = 90)
+                          Buffers: shared hit=3
+              ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..8.30 rows=1 width=20) (actual time=0.009..0.009 rows=1 loops=2)
+                    Index Cond: (doctor_id = a.doctor_id)
+                    Buffers: shared hit=6
+        ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..8.29 rows=1 width=30) (actual time=0.005..0.005 rows=1 loops=2)
+              Index Cond: (clinic_id = a.clinic_id)
+              Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=432
+Planning Time: 0.877 ms
+Execution Time: 0.198 ms
+=== R04 run 2 ===
+Sort  (cost=36.67..36.67 rows=1 width=63) (actual time=0.187..0.189 rows=2 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=37
+  ->  Nested Loop Left Join  (cost=5.01..36.66 rows=1 width=63) (actual time=0.126..0.162 rows=2 loops=1)
+        Buffers: shared hit=34
+        ->  Nested Loop  (cost=4.73..28.35 rows=1 width=41) (actual time=0.117..0.147 rows=2 loops=1)
+              Buffers: shared hit=28
+              ->  Bitmap Heap Scan on appointments a  (cost=4.45..20.05 rows=1 width=29) (actual time=0.101..0.121 rows=2 loops=1)
+                    Recheck Cond: (patient_id = 90)
+                    Filter: ((status)::text = 'BOOKED'::text)
+                    Rows Removed by Filter: 7
+                    Heap Blocks: exact=19
+                    Buffers: shared hit=22
+                    ->  Bitmap Index Scan on ix_appt_patient  (cost=0.00..4.45 rows=4 width=0) (actual time=0.012..0.012 rows=19 loops=1)
+                          Index Cond: (patient_id = 90)
+                          Buffers: shared hit=3
+              ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..8.30 rows=1 width=20) (actual time=0.012..0.012 rows=1 loops=2)
+                    Index Cond: (doctor_id = a.doctor_id)
+                    Buffers: shared hit=6
+        ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..8.29 rows=1 width=30) (actual time=0.006..0.006 rows=1 loops=2)
+              Index Cond: (clinic_id = a.clinic_id)
+              Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=432
+Planning Time: 1.042 ms
+Execution Time: 0.249 ms
+=== R04 run 3 ===
+Sort  (cost=36.67..36.67 rows=1 width=63) (actual time=0.144..0.145 rows=2 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=37
+  ->  Nested Loop Left Join  (cost=5.01..36.66 rows=1 width=63) (actual time=0.084..0.115 rows=2 loops=1)
+        Buffers: shared hit=34
+        ->  Nested Loop  (cost=4.73..28.35 rows=1 width=41) (actual time=0.077..0.102 rows=2 loops=1)
+              Buffers: shared hit=28
+              ->  Bitmap Heap Scan on appointments a  (cost=4.45..20.05 rows=1 width=29) (actual time=0.062..0.080 rows=2 loops=1)
+                    Recheck Cond: (patient_id = 90)
+                    Filter: ((status)::text = 'BOOKED'::text)
+                    Rows Removed by Filter: 7
+                    Heap Blocks: exact=19
+                    Buffers: shared hit=22
+                    ->  Bitmap Index Scan on ix_appt_patient  (cost=0.00..4.45 rows=4 width=0) (actual time=0.012..0.013 rows=19 loops=1)
+                          Index Cond: (patient_id = 90)
+                          Buffers: shared hit=3
+              ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..8.30 rows=1 width=20) (actual time=0.010..0.010 rows=1 loops=2)
+                    Index Cond: (doctor_id = a.doctor_id)
+                    Buffers: shared hit=6
+        ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..8.29 rows=1 width=30) (actual time=0.006..0.006 rows=1 loops=2)
+              Index Cond: (clinic_id = a.clinic_id)
+              Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=432
+Planning Time: 1.005 ms
+Execution Time: 0.233 ms
+=== R04 run 4 ===
+Sort  (cost=36.67..36.67 rows=1 width=63) (actual time=0.196..0.197 rows=2 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=37
+  ->  Nested Loop Left Join  (cost=5.01..36.66 rows=1 width=63) (actual time=0.136..0.169 rows=2 loops=1)
+        Buffers: shared hit=34
+        ->  Nested Loop  (cost=4.73..28.35 rows=1 width=41) (actual time=0.100..0.127 rows=2 loops=1)
+              Buffers: shared hit=28
+              ->  Bitmap Heap Scan on appointments a  (cost=4.45..20.05 rows=1 width=29) (actual time=0.085..0.103 rows=2 loops=1)
+                    Recheck Cond: (patient_id = 90)
+                    Filter: ((status)::text = 'BOOKED'::text)
+                    Rows Removed by Filter: 7
+                    Heap Blocks: exact=19
+                    Buffers: shared hit=22
+                    ->  Bitmap Index Scan on ix_appt_patient  (cost=0.00..4.45 rows=4 width=0) (actual time=0.012..0.012 rows=19 loops=1)
+                          Index Cond: (patient_id = 90)
+                          Buffers: shared hit=3
+              ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..8.30 rows=1 width=20) (actual time=0.010..0.010 rows=1 loops=2)
+                    Index Cond: (doctor_id = a.doctor_id)
+                    Buffers: shared hit=6
+        ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..8.29 rows=1 width=30) (actual time=0.020..0.020 rows=1 loops=2)
+              Index Cond: (clinic_id = a.clinic_id)
+              Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=432
+Planning Time: 0.994 ms
+Execution Time: 0.255 ms
+=== R04 run 5 ===
+Sort  (cost=36.67..36.67 rows=1 width=63) (actual time=0.136..0.138 rows=2 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=37
+  ->  Nested Loop Left Join  (cost=5.01..36.66 rows=1 width=63) (actual time=0.083..0.112 rows=2 loops=1)
+        Buffers: shared hit=34
+        ->  Nested Loop  (cost=4.73..28.35 rows=1 width=41) (actual time=0.074..0.099 rows=2 loops=1)
+              Buffers: shared hit=28
+              ->  Bitmap Heap Scan on appointments a  (cost=4.45..20.05 rows=1 width=29) (actual time=0.060..0.076 rows=2 loops=1)
+                    Recheck Cond: (patient_id = 90)
+                    Filter: ((status)::text = 'BOOKED'::text)
+                    Rows Removed by Filter: 7
+                    Heap Blocks: exact=19
+                    Buffers: shared hit=22
+                    ->  Bitmap Index Scan on ix_appt_patient  (cost=0.00..4.45 rows=4 width=0) (actual time=0.012..0.012 rows=19 loops=1)
+                          Index Cond: (patient_id = 90)
+                          Buffers: shared hit=3
+              ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..8.30 rows=1 width=20) (actual time=0.010..0.010 rows=1 loops=2)
+                    Index Cond: (doctor_id = a.doctor_id)
+                    Buffers: shared hit=6
+        ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..8.29 rows=1 width=30) (actual time=0.006..0.006 rows=1 loops=2)
+              Index Cond: (clinic_id = a.clinic_id)
+              Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=432
+Planning Time: 0.943 ms
+Execution Time: 0.194 ms

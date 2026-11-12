@@ -1,0 +1,30 @@
+=== W03 run 1 ===
+Update on prescriptions  (cost=0.29..8.31 rows=0 width=0) (actual time=0.241..0.242 rows=0 loops=1)
+  Buffers: shared hit=34
+  ->  Index Scan using uq_prescriptions_appointment on prescriptions  (cost=0.29..8.31 rows=1 width=42) (actual time=0.019..0.020 rows=1 loops=1)
+        Index Cond: (appointment_id = 18872)
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=93
+Planning Time: 0.278 ms
+Execution Time: 0.321 ms
+=== W03 run 2 ===
+Update on prescriptions  (cost=0.29..8.31 rows=0 width=0) (actual time=0.228..0.228 rows=0 loops=1)
+  Buffers: shared hit=36
+  ->  Index Scan using uq_prescriptions_appointment on prescriptions  (cost=0.29..8.31 rows=1 width=42) (actual time=0.024..0.027 rows=1 loops=1)
+        Index Cond: (appointment_id = 18872)
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=93
+Planning Time: 0.288 ms
+Execution Time: 0.280 ms
+=== W03 run 3 ===
+Update on prescriptions  (cost=0.29..8.31 rows=0 width=0) (actual time=0.201..0.201 rows=0 loops=1)
+  Buffers: shared hit=36
+  ->  Index Scan using uq_prescriptions_appointment on prescriptions  (cost=0.29..8.31 rows=1 width=42) (actual time=0.023..0.027 rows=1 loops=1)
+        Index Cond: (appointment_id = 18872)
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=93
+Planning Time: 0.273 ms
+Execution Time: 0.258 ms

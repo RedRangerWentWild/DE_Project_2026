@@ -1,0 +1,18 @@
+# W04 on practo_base (Phase 3 state, no tuning indexes), 100 transactions, one connection; the statement runs inside BEGIN ... ROLLBACK
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+transaction type: /tmp/claude-0/-home-user/dc4f4dee-c1da-5209-a13b-9c34ae1ba663/scratchpad/de/pgb/W04.sql
+scaling factor: 1
+query mode: simple
+number of clients: 1
+number of threads: 1
+maximum number of tries: 1
+number of transactions per client: 100
+number of transactions actually processed: 100/100
+number of failed transactions: 0 (0.000%)
+latency average = 15.434 ms
+initial connection time = 1.757 ms
+tps = 64.791304 (without initial connection time)
+statement latencies in milliseconds and failures:
+         0.047           0  BEGIN;
+        15.286           0  UPDATE appointments SET status = 'NO_SHOW' WHERE status IN ('BOOKED', 'CHECKED_IN')   AND slot_end < '2026-07-02 00:00:00+05:30
+         0.101           0  ROLLBACK;

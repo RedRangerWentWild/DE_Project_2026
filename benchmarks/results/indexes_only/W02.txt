@@ -1,0 +1,54 @@
+=== W02 run 1 ===
+Update on appointments  (cost=7.90..15.92 rows=0 width=0) (actual time=0.351..0.352 rows=0 loops=1)
+  Buffers: shared hit=61
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=0.42..7.48 rows=1 width=12) (actual time=0.019..0.020 rows=1 loops=1)
+          Buffers: shared hit=4
+          ->  Index Only Scan using ix_appt_slot_cover on appointments appointments_1  (cost=0.42..14.54 rows=2 width=12) (actual time=0.019..0.019 rows=1 loops=1)
+                Index Cond: ((slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone))
+                Filter: (((status)::text = 'BOOKED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                Heap Fetches: 0
+                Buffers: shared hit=4
+  ->  Index Scan using appointments_pkey on appointments  (cost=0.42..8.44 rows=1 width=56) (actual time=0.043..0.044 rows=1 loops=1)
+        Index Cond: (appointment_id = $0)
+        Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=251
+Planning Time: 0.577 ms
+Execution Time: 0.415 ms
+=== W02 run 2 ===
+Update on appointments  (cost=7.90..15.92 rows=0 width=0) (actual time=0.294..0.295 rows=0 loops=1)
+  Buffers: shared hit=64
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=0.42..7.48 rows=1 width=12) (actual time=0.028..0.029 rows=1 loops=1)
+          Buffers: shared hit=5
+          ->  Index Only Scan using ix_appt_slot_cover on appointments appointments_1  (cost=0.42..14.54 rows=2 width=12) (actual time=0.027..0.028 rows=1 loops=1)
+                Index Cond: ((slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone))
+                Filter: (((status)::text = 'BOOKED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                Heap Fetches: 1
+                Buffers: shared hit=5
+  ->  Index Scan using appointments_pkey on appointments  (cost=0.42..8.44 rows=1 width=56) (actual time=0.044..0.047 rows=1 loops=1)
+        Index Cond: (appointment_id = $0)
+        Buffers: shared hit=11
+Planning:
+  Buffers: shared hit=251
+Planning Time: 0.532 ms
+Execution Time: 0.421 ms
+=== W02 run 3 ===
+Update on appointments  (cost=7.90..15.92 rows=0 width=0) (actual time=0.300..0.300 rows=0 loops=1)
+  Buffers: shared hit=64
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=0.42..7.48 rows=1 width=12) (actual time=0.028..0.028 rows=1 loops=1)
+          Buffers: shared hit=5
+          ->  Index Only Scan using ix_appt_slot_cover on appointments appointments_1  (cost=0.42..14.54 rows=2 width=12) (actual time=0.027..0.027 rows=1 loops=1)
+                Index Cond: ((slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone))
+                Filter: (((status)::text = 'BOOKED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                Heap Fetches: 1
+                Buffers: shared hit=5
+  ->  Index Scan using appointments_pkey on appointments  (cost=0.42..8.44 rows=1 width=56) (actual time=0.043..0.046 rows=1 loops=1)
+        Index Cond: (appointment_id = $0)
+        Buffers: shared hit=11
+Planning:
+  Buffers: shared hit=251
+Planning Time: 0.503 ms
+Execution Time: 0.354 ms

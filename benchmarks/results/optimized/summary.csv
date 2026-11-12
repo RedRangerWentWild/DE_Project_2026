@@ -1,0 +1,31 @@
+query_id,type,avg_ms,median_ms,min_ms,max_ms,scan_nodes
+R01,READ,4.000,4.159,3.065,4.470,Seq Scan on doctor_specializations | Seq Scan on specializations | Index Scan using doctors_pkey on doctors | Index Scan using pk_doctor_schedules on doctor_schedules | Seq Scan on clinics
+R02,READ,0.100,0.105,0.079,0.122,Index Scan using pk_doctor_schedules on doctor_schedules | Index Scan using clinics_pkey on clinics
+R03,READ,0.173,0.164,0.145,0.207,Index Scan using pk_doctor_schedules on doctor_schedules | Index Only Scan using ix_appt_doctor_slot on appointments
+R04,READ,0.226,0.233,0.194,0.255,Bitmap Heap Scan on appointments | Bitmap Index Scan on ix_appt_patient | Index Scan using doctors_pkey on doctors | Index Scan using clinics_pkey on clinics
+R05,READ,0.130,0.103,0.087,0.230,Index Scan using ix_appt_doctor_slot on appointments | Index Scan using patients_pkey on patients
+R06,READ,0.061,0.057,0.046,0.093,Index Scan using uq_patients_phone on patients
+R07,READ,0.124,0.113,0.095,0.166,Index Scan using uq_prescriptions_appointment on prescriptions | Index Scan using pk_prescription_items on prescription_items
+R08,READ,17.038,16.305,15.528,18.852,Seq Scan on doctor_specializations | Index Only Scan using ix_appt_slot_cover on appointments | Seq Scan on specializations
+R09,READ,5.270,4.667,4.533,7.517,Bitmap Heap Scan on appointments | Bitmap Index Scan on ix_appt_slot_cover
+R10,READ,41.925,37.023,34.172,54.969,Seq Scan on appointments | Bitmap Heap Scan on patients | Bitmap Index Scan on ix_patients_allergies | Index Scan using uq_prescriptions_appointment on prescriptions | Index Scan using pk_prescription_items on prescription_items
+R11,READ,2.553,2.375,2.153,3.363,Index Scan using ix_presc_followup on prescriptions | Index Scan using appointments_pkey on appointments | Index Only Scan using ix_appt_patient on appointments
+R12,READ,20.421,20.298,18.037,24.552,Index Only Scan using ix_appt_slot_cover on appointments
+R13,READ,1.269,1.223,1.199,1.406,Seq Scan on clinics | Index Only Scan using ix_sched_clinic on doctor_schedules
+R14,READ,1.252,1.195,1.036,1.681,Seq Scan on doctor_rating_summary
+R15,READ,0.438,0.444,0.378,0.487,Bitmap Heap Scan on monthly_medicine_by_specialization | Bitmap Index Scan on ux_monthly_medicine
+R16,READ,5.586,5.431,5.111,6.586,Bitmap Heap Scan on appointments | Bitmap Index Scan on ix_appt_slot_cover | Seq Scan on clinics
+R17,READ,55.094,53.916,53.703,58.089,Index Only Scan using ix_appt_slot_cover on appointments | Seq Scan on patients
+R18,READ,5.877,5.850,5.542,6.185,Seq Scan on doctors | Seq Scan on doctor_schedules | Seq Scan on clinics
+R19,READ,13.932,12.920,11.666,18.456,Seq Scan on doctors | Seq Scan on doctor_schedules | Seq Scan on clinics | Index Only Scan using ix_appt_doctor_slot on appointments
+R20,READ,3.733,2.809,2.684,7.343,Index Only Scan using ix_appt_slot_cover on appointments
+R21,READ,0.803,0.782,0.774,0.872,Index Scan using ix_appt_slot_cover on appointments
+R22,READ,0.065,0.063,0.062,0.071,Index Only Scan using ix_appt_slot_cover on appointments
+R23,READ,0.050,0.049,0.047,0.055,Index Scan using uq_doctors_registration_no on doctors
+R24,READ,62.321,64.824,54.065,71.489,Seq Scan on appointments
+R25,READ,38.699,35.505,34.438,48.758,Index Only Scan using ix_appt_slot_cover on appointments | Seq Scan on doctor_specializations
+W01,WRITE,1.863,1.684,1.014,3.604,Index Scan using pk_doctor_schedules on doctor_schedules | Index Scan using doctors_pkey on doctors
+W02,WRITE,0.396,0.400,0.377,0.417,Index Only Scan using ix_appt_slot_cover on appointments | Index Scan using appointments_pkey on appointments
+W03,WRITE,0.345,0.367,0.261,0.445,Index Scan using uq_prescriptions_appointment on prescriptions
+W04,WRITE,6.592,6.066,5.445,8.519,Index Scan using ix_appt_open_slot_end on appointments
+W05,WRITE,0.476,0.431,0.378,0.657,Index Scan using ix_appt_doctor_slot on appointments

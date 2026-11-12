@@ -1,0 +1,18 @@
+# W05 on practo (with sql/05_indexes.sql), 500 transactions, one connection; the statement runs inside BEGIN ... ROLLBACK
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+transaction type: /tmp/claude-0/-home-user/dc4f4dee-c1da-5209-a13b-9c34ae1ba663/scratchpad/de/pgb/W05.sql
+scaling factor: 1
+query mode: simple
+number of clients: 1
+number of threads: 1
+maximum number of tries: 1
+number of transactions per client: 500
+number of transactions actually processed: 500/500
+number of failed transactions: 0 (0.000%)
+latency average = 0.352 ms
+initial connection time = 1.968 ms
+tps = 2844.141069 (without initial connection time)
+statement latencies in milliseconds and failures:
+         0.028           0  BEGIN;
+         0.276           0  UPDATE appointments SET status = 'CANCELLED', payment_status = 'REFUNDED' WHERE doctor_id = 504 AND status = 'BOOKED'   AND slo
+         0.047           0  ROLLBACK;

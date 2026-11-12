@@ -1,0 +1,152 @@
+-- Rejected alternative: R01_exists
+-- EXISTS semi-joins instead of JOIN + DISTINCT. Slower than the original on this data, so R01 was left unchanged.
+-- Measured on the indexed database (sql/05_indexes.sql), EXPLAIN (ANALYZE, BUFFERS), 3 runs. Query:
+--   SELECT d.doctor_id, d.full_name, d.experience_years, d.consultation_fee
+--   FROM doctors d
+--   WHERE d.is_verified
+--     AND EXISTS (SELECT 1 FROM doctor_specializations ds
+--                 JOIN specializations s ON s.spec_id = ds.spec_id
+--                 WHERE ds.doctor_id = d.doctor_id AND s.spec_name = 'Dermatologist')
+--     AND EXISTS (SELECT 1 FROM doctor_schedules sc
+--                 JOIN clinics c ON c.clinic_id = sc.clinic_id
+--                 WHERE sc.doctor_id = d.doctor_id AND c.city_id = 1)
+--   ORDER BY d.experience_years DESC, d.doctor_id
+--   LIMIT 20;
+=== R01_exists run 1 ===
+Limit  (cost=857.76..857.81 rows=20 width=27) (actual time=4.438..4.444 rows=20 loops=1)
+  Buffers: shared hit=6353 read=122
+  ->  Sort  (cost=857.76..858.32 rows=224 width=27) (actual time=4.436..4.441 rows=20 loops=1)
+        Sort Key: d.experience_years DESC, d.doctor_id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=6353 read=122
+        ->  Nested Loop Semi Join  (cost=69.12..851.80 rows=224 width=27) (actual time=0.689..4.399 rows=41 loops=1)
+              Buffers: shared hit=6347 read=122
+              ->  Nested Loop  (cost=68.56..163.01 rows=224 width=31) (actual time=0.655..1.179 rows=221 loops=1)
+                    Buffers: shared hit=760 read=8
+                    ->  HashAggregate  (cost=68.28..70.75 rows=247 width=4) (actual time=0.628..0.672 rows=250 loops=1)
+                          Group Key: ds.doctor_id
+                          Batches: 1  Memory Usage: 45kB
+                          Buffers: shared hit=17 read=1
+                          ->  Hash Join  (cost=1.20..67.66 rows=247 width=4) (actual time=0.035..0.585 rows=250 loops=1)
+                                Hash Cond: (ds.spec_id = s.spec_id)
+                                Buffers: shared hit=17 read=1
+                                ->  Seq Scan on doctor_specializations ds  (cost=0.00..54.00 rows=3700 width=6) (actual time=0.004..0.282 rows=3700 loops=1)
+                                      Buffers: shared hit=17
+                                ->  Hash  (cost=1.19..1.19 rows=1 width=2) (actual time=0.018..0.019 rows=1 loops=1)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared read=1
+                                      ->  Seq Scan on specializations s  (cost=0.00..1.19 rows=1 width=2) (actual time=0.011..0.012 rows=1 loops=1)
+                                            Filter: ((spec_name)::text = 'Dermatologist'::text)
+                                            Rows Removed by Filter: 14
+                                            Buffers: shared read=1
+                    ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..0.38 rows=1 width=27) (actual time=0.002..0.002 rows=1 loops=250)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Filter: is_verified
+                          Rows Removed by Filter: 0
+                          Buffers: shared hit=743 read=7
+              ->  Nested Loop  (cost=0.56..3.84 rows=2 width=4) (actual time=0.014..0.014 rows=0 loops=221)
+                    Buffers: shared hit=5587 read=114
+                    ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..0.83 rows=10 width=8) (actual time=0.005..0.007 rows=9 loops=221)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Buffers: shared hit=561 read=112
+                    ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..0.30 rows=1 width=4) (actual time=0.001..0.001 rows=0 loops=2063)
+                          Index Cond: (clinic_id = sc.clinic_id)
+                          Filter: (city_id = 1)
+                          Rows Removed by Filter: 1
+                          Buffers: shared hit=5026 read=2
+Planning:
+  Buffers: shared hit=356 read=1
+Planning Time: 1.173 ms
+Execution Time: 4.572 ms
+=== R01_exists run 2 ===
+Limit  (cost=857.76..857.81 rows=20 width=27) (actual time=4.060..4.066 rows=20 loops=1)
+  Buffers: shared hit=6475
+  ->  Sort  (cost=857.76..858.32 rows=224 width=27) (actual time=4.059..4.063 rows=20 loops=1)
+        Sort Key: d.experience_years DESC, d.doctor_id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=6475
+        ->  Nested Loop Semi Join  (cost=69.12..851.80 rows=224 width=27) (actual time=0.630..4.023 rows=41 loops=1)
+              Buffers: shared hit=6469
+              ->  Nested Loop  (cost=68.56..163.01 rows=224 width=31) (actual time=0.606..1.094 rows=221 loops=1)
+                    Buffers: shared hit=768
+                    ->  HashAggregate  (cost=68.28..70.75 rows=247 width=4) (actual time=0.584..0.617 rows=250 loops=1)
+                          Group Key: ds.doctor_id
+                          Batches: 1  Memory Usage: 45kB
+                          Buffers: shared hit=18
+                          ->  Hash Join  (cost=1.20..67.66 rows=247 width=4) (actual time=0.031..0.522 rows=250 loops=1)
+                                Hash Cond: (ds.spec_id = s.spec_id)
+                                Buffers: shared hit=18
+                                ->  Seq Scan on doctor_specializations ds  (cost=0.00..54.00 rows=3700 width=6) (actual time=0.005..0.233 rows=3700 loops=1)
+                                      Buffers: shared hit=17
+                                ->  Hash  (cost=1.19..1.19 rows=1 width=2) (actual time=0.013..0.014 rows=1 loops=1)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=1
+                                      ->  Seq Scan on specializations s  (cost=0.00..1.19 rows=1 width=2) (actual time=0.005..0.005 rows=1 loops=1)
+                                            Filter: ((spec_name)::text = 'Dermatologist'::text)
+                                            Rows Removed by Filter: 14
+                                            Buffers: shared hit=1
+                    ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..0.38 rows=1 width=27) (actual time=0.002..0.002 rows=1 loops=250)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Filter: is_verified
+                          Rows Removed by Filter: 0
+                          Buffers: shared hit=750
+              ->  Nested Loop  (cost=0.56..3.84 rows=2 width=4) (actual time=0.013..0.013 rows=0 loops=221)
+                    Buffers: shared hit=5701
+                    ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..0.83 rows=10 width=8) (actual time=0.004..0.005 rows=9 loops=221)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Buffers: shared hit=673
+                    ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..0.30 rows=1 width=4) (actual time=0.001..0.001 rows=0 loops=2063)
+                          Index Cond: (clinic_id = sc.clinic_id)
+                          Filter: (city_id = 1)
+                          Rows Removed by Filter: 1
+                          Buffers: shared hit=5028
+Planning:
+  Buffers: shared hit=367
+Planning Time: 1.236 ms
+Execution Time: 4.174 ms
+=== R01_exists run 3 ===
+Limit  (cost=857.76..857.81 rows=20 width=27) (actual time=4.094..4.100 rows=20 loops=1)
+  Buffers: shared hit=6475
+  ->  Sort  (cost=857.76..858.32 rows=224 width=27) (actual time=4.093..4.097 rows=20 loops=1)
+        Sort Key: d.experience_years DESC, d.doctor_id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=6475
+        ->  Nested Loop Semi Join  (cost=69.12..851.80 rows=224 width=27) (actual time=0.778..4.057 rows=41 loops=1)
+              Buffers: shared hit=6469
+              ->  Nested Loop  (cost=68.56..163.01 rows=224 width=31) (actual time=0.726..1.229 rows=221 loops=1)
+                    Buffers: shared hit=768
+                    ->  HashAggregate  (cost=68.28..70.75 rows=247 width=4) (actual time=0.701..0.739 rows=250 loops=1)
+                          Group Key: ds.doctor_id
+                          Batches: 1  Memory Usage: 45kB
+                          Buffers: shared hit=18
+                          ->  Hash Join  (cost=1.20..67.66 rows=247 width=4) (actual time=0.030..0.538 rows=250 loops=1)
+                                Hash Cond: (ds.spec_id = s.spec_id)
+                                Buffers: shared hit=18
+                                ->  Seq Scan on doctor_specializations ds  (cost=0.00..54.00 rows=3700 width=6) (actual time=0.005..0.235 rows=3700 loops=1)
+                                      Buffers: shared hit=17
+                                ->  Hash  (cost=1.19..1.19 rows=1 width=2) (actual time=0.012..0.013 rows=1 loops=1)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=1
+                                      ->  Seq Scan on specializations s  (cost=0.00..1.19 rows=1 width=2) (actual time=0.004..0.005 rows=1 loops=1)
+                                            Filter: ((spec_name)::text = 'Dermatologist'::text)
+                                            Rows Removed by Filter: 14
+                                            Buffers: shared hit=1
+                    ->  Index Scan using doctors_pkey on doctors d  (cost=0.28..0.38 rows=1 width=27) (actual time=0.002..0.002 rows=1 loops=250)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Filter: is_verified
+                          Rows Removed by Filter: 0
+                          Buffers: shared hit=750
+              ->  Nested Loop  (cost=0.56..3.84 rows=2 width=4) (actual time=0.013..0.013 rows=0 loops=221)
+                    Buffers: shared hit=5701
+                    ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..0.83 rows=10 width=8) (actual time=0.003..0.005 rows=9 loops=221)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Buffers: shared hit=673
+                    ->  Index Scan using clinics_pkey on clinics c  (cost=0.28..0.30 rows=1 width=4) (actual time=0.001..0.001 rows=0 loops=2063)
+                          Index Cond: (clinic_id = sc.clinic_id)
+                          Filter: (city_id = 1)
+                          Rows Removed by Filter: 1
+                          Buffers: shared hit=5028
+Planning:
+  Buffers: shared hit=367
+Planning Time: 1.184 ms
+Execution Time: 4.207 ms

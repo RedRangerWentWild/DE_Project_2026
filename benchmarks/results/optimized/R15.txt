@@ -1,0 +1,80 @@
+=== R15 run 1 ===
+Sort  (cost=59.63..60.19 rows=225 width=38) (actual time=0.321..0.332 rows=225 loops=1)
+  Sort Key: spec_name, times_prescribed DESC
+  Sort Method: quicksort  Memory: 39kB
+  Buffers: shared hit=48
+  ->  Bitmap Heap Scan on monthly_medicine_by_specialization  (cost=10.02..50.84 rows=225 width=38) (actual time=0.036..0.165 rows=225 loops=1)
+        Recheck Cond: (month = '2026-06-01'::date)
+        Heap Blocks: exact=38
+        Buffers: shared hit=42
+        ->  Bitmap Index Scan on ux_monthly_medicine  (cost=0.00..9.97 rows=225 width=0) (actual time=0.024..0.024 rows=225 loops=1)
+              Index Cond: (month = '2026-06-01'::date)
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=98
+Planning Time: 0.284 ms
+Execution Time: 0.378 ms
+=== R15 run 2 ===
+Sort  (cost=59.63..60.19 rows=225 width=38) (actual time=0.380..0.394 rows=225 loops=1)
+  Sort Key: spec_name, times_prescribed DESC
+  Sort Method: quicksort  Memory: 39kB
+  Buffers: shared hit=48
+  ->  Bitmap Heap Scan on monthly_medicine_by_specialization  (cost=10.02..50.84 rows=225 width=38) (actual time=0.043..0.168 rows=225 loops=1)
+        Recheck Cond: (month = '2026-06-01'::date)
+        Heap Blocks: exact=38
+        Buffers: shared hit=42
+        ->  Bitmap Index Scan on ux_monthly_medicine  (cost=0.00..9.97 rows=225 width=0) (actual time=0.029..0.029 rows=225 loops=1)
+              Index Cond: (month = '2026-06-01'::date)
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=98
+Planning Time: 0.339 ms
+Execution Time: 0.456 ms
+=== R15 run 3 ===
+Sort  (cost=59.63..60.19 rows=225 width=38) (actual time=0.359..0.370 rows=225 loops=1)
+  Sort Key: spec_name, times_prescribed DESC
+  Sort Method: quicksort  Memory: 39kB
+  Buffers: shared hit=48
+  ->  Bitmap Heap Scan on monthly_medicine_by_specialization  (cost=10.02..50.84 rows=225 width=38) (actual time=0.045..0.161 rows=225 loops=1)
+        Recheck Cond: (month = '2026-06-01'::date)
+        Heap Blocks: exact=38
+        Buffers: shared hit=42
+        ->  Bitmap Index Scan on ux_monthly_medicine  (cost=0.00..9.97 rows=225 width=0) (actual time=0.031..0.031 rows=225 loops=1)
+              Index Cond: (month = '2026-06-01'::date)
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=98
+Planning Time: 0.372 ms
+Execution Time: 0.425 ms
+=== R15 run 4 ===
+Sort  (cost=59.63..60.19 rows=225 width=38) (actual time=0.411..0.428 rows=225 loops=1)
+  Sort Key: spec_name, times_prescribed DESC
+  Sort Method: quicksort  Memory: 39kB
+  Buffers: shared hit=48
+  ->  Bitmap Heap Scan on monthly_medicine_by_specialization  (cost=10.02..50.84 rows=225 width=38) (actual time=0.045..0.198 rows=225 loops=1)
+        Recheck Cond: (month = '2026-06-01'::date)
+        Heap Blocks: exact=38
+        Buffers: shared hit=42
+        ->  Bitmap Index Scan on ux_monthly_medicine  (cost=0.00..9.97 rows=225 width=0) (actual time=0.031..0.031 rows=225 loops=1)
+              Index Cond: (month = '2026-06-01'::date)
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=98
+Planning Time: 0.430 ms
+Execution Time: 0.487 ms
+=== R15 run 5 ===
+Sort  (cost=59.63..60.19 rows=225 width=38) (actual time=0.375..0.389 rows=225 loops=1)
+  Sort Key: spec_name, times_prescribed DESC
+  Sort Method: quicksort  Memory: 39kB
+  Buffers: shared hit=48
+  ->  Bitmap Heap Scan on monthly_medicine_by_specialization  (cost=10.02..50.84 rows=225 width=38) (actual time=0.044..0.181 rows=225 loops=1)
+        Recheck Cond: (month = '2026-06-01'::date)
+        Heap Blocks: exact=38
+        Buffers: shared hit=42
+        ->  Bitmap Index Scan on ux_monthly_medicine  (cost=0.00..9.97 rows=225 width=0) (actual time=0.029..0.029 rows=225 loops=1)
+              Index Cond: (month = '2026-06-01'::date)
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=98
+Planning Time: 0.374 ms
+Execution Time: 0.444 ms

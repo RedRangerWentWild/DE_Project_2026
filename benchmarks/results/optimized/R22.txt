@@ -1,0 +1,55 @@
+=== R22 run 1 ===
+Limit  (cost=0.42..1.63 rows=25 width=29) (actual time=0.023..0.033 rows=25 loops=1)
+  Buffers: shared hit=5
+  ->  Index Only Scan Backward using ix_appt_slot_cover on appointments  (cost=0.42..2438.67 rows=50253 width=29) (actual time=0.022..0.030 rows=25 loops=1)
+        Index Cond: (ROW(slot_start, appointment_id) < ROW('2025-07-08 12:15:00+05:30'::timestamp with time zone, 50125))
+        Heap Fetches: 0
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=187
+Planning Time: 0.424 ms
+Execution Time: 0.062 ms
+=== R22 run 2 ===
+Limit  (cost=0.42..1.63 rows=25 width=29) (actual time=0.022..0.033 rows=25 loops=1)
+  Buffers: shared hit=5
+  ->  Index Only Scan Backward using ix_appt_slot_cover on appointments  (cost=0.42..2438.67 rows=50253 width=29) (actual time=0.021..0.030 rows=25 loops=1)
+        Index Cond: (ROW(slot_start, appointment_id) < ROW('2025-07-08 12:15:00+05:30'::timestamp with time zone, 50125))
+        Heap Fetches: 0
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=187
+Planning Time: 0.408 ms
+Execution Time: 0.062 ms
+=== R22 run 3 ===
+Limit  (cost=0.42..1.63 rows=25 width=29) (actual time=0.023..0.034 rows=25 loops=1)
+  Buffers: shared hit=5
+  ->  Index Only Scan Backward using ix_appt_slot_cover on appointments  (cost=0.42..2438.67 rows=50253 width=29) (actual time=0.022..0.031 rows=25 loops=1)
+        Index Cond: (ROW(slot_start, appointment_id) < ROW('2025-07-08 12:15:00+05:30'::timestamp with time zone, 50125))
+        Heap Fetches: 0
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=187
+Planning Time: 0.418 ms
+Execution Time: 0.063 ms
+=== R22 run 4 ===
+Limit  (cost=0.42..1.63 rows=25 width=29) (actual time=0.026..0.038 rows=25 loops=1)
+  Buffers: shared hit=5
+  ->  Index Only Scan Backward using ix_appt_slot_cover on appointments  (cost=0.42..2438.67 rows=50253 width=29) (actual time=0.025..0.034 rows=25 loops=1)
+        Index Cond: (ROW(slot_start, appointment_id) < ROW('2025-07-08 12:15:00+05:30'::timestamp with time zone, 50125))
+        Heap Fetches: 0
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=187
+Planning Time: 0.522 ms
+Execution Time: 0.071 ms
+=== R22 run 5 ===
+Limit  (cost=0.42..1.63 rows=25 width=29) (actual time=0.024..0.035 rows=25 loops=1)
+  Buffers: shared hit=5
+  ->  Index Only Scan Backward using ix_appt_slot_cover on appointments  (cost=0.42..2438.67 rows=50253 width=29) (actual time=0.023..0.032 rows=25 loops=1)
+        Index Cond: (ROW(slot_start, appointment_id) < ROW('2025-07-08 12:15:00+05:30'::timestamp with time zone, 50125))
+        Heap Fetches: 0
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=187
+Planning Time: 0.410 ms
+Execution Time: 0.065 ms

@@ -1,0 +1,60 @@
+=== R02 run 1 ===
+Sort  (cost=78.15..78.18 rows=10 width=52) (actual time=0.500..0.503 rows=9 loops=1)
+  Sort Key: sc.weekday, sc.start_time
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=31
+  ->  Hash Left Join  (cost=54.04..77.99 rows=10 width=52) (actual time=0.469..0.475 rows=9 loops=1)
+        Hash Cond: (sc.clinic_id = c.clinic_id)
+        Buffers: shared hit=23
+        ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..24.21 rows=10 width=24) (actual time=0.013..0.015 rows=9 loops=1)
+              Index Cond: (doctor_id = 217)
+              Buffers: shared hit=3
+        ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.439..0.439 rows=1500 loops=1)
+              Buckets: 2048  Batches: 1  Memory Usage: 110kB
+              Buffers: shared hit=20
+              ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.005..0.143 rows=1500 loops=1)
+                    Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=273
+Planning Time: 0.545 ms
+Execution Time: 0.546 ms
+=== R02 run 2 ===
+Sort  (cost=78.15..78.18 rows=10 width=52) (actual time=0.429..0.431 rows=9 loops=1)
+  Sort Key: sc.weekday, sc.start_time
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=31
+  ->  Hash Left Join  (cost=54.04..77.99 rows=10 width=52) (actual time=0.386..0.391 rows=9 loops=1)
+        Hash Cond: (sc.clinic_id = c.clinic_id)
+        Buffers: shared hit=23
+        ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..24.21 rows=10 width=24) (actual time=0.012..0.013 rows=9 loops=1)
+              Index Cond: (doctor_id = 217)
+              Buffers: shared hit=3
+        ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.359..0.359 rows=1500 loops=1)
+              Buckets: 2048  Batches: 1  Memory Usage: 110kB
+              Buffers: shared hit=20
+              ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.005..0.128 rows=1500 loops=1)
+                    Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=273
+Planning Time: 0.539 ms
+Execution Time: 0.480 ms
+=== R02 run 3 ===
+Sort  (cost=78.15..78.18 rows=10 width=52) (actual time=0.403..0.404 rows=9 loops=1)
+  Sort Key: sc.weekday, sc.start_time
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=31
+  ->  Hash Left Join  (cost=54.04..77.99 rows=10 width=52) (actual time=0.375..0.380 rows=9 loops=1)
+        Hash Cond: (sc.clinic_id = c.clinic_id)
+        Buffers: shared hit=23
+        ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..24.21 rows=10 width=24) (actual time=0.020..0.022 rows=9 loops=1)
+              Index Cond: (doctor_id = 217)
+              Buffers: shared hit=3
+        ->  Hash  (cost=35.00..35.00 rows=1500 width=30) (actual time=0.340..0.341 rows=1500 loops=1)
+              Buckets: 2048  Batches: 1  Memory Usage: 110kB
+              Buffers: shared hit=20
+              ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=30) (actual time=0.004..0.124 rows=1500 loops=1)
+                    Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=273
+Planning Time: 0.528 ms
+Execution Time: 0.440 ms

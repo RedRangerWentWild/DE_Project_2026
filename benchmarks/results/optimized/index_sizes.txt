@@ -1,0 +1,41 @@
+# Sizes measured on a freshly built copy (practo_base + sql/05_indexes.sql), before any benchmark run.
+SET
+               object               |       kind        |              on_table              |  bytes   |  size   | pct_of_table 
+------------------------------------+-------------------+------------------------------------+----------+---------+--------------
+ appointments                       | table             |                                    | 22003712 | 21 MB   |             
+ appointments_pkey                  | index             | appointments                       |  3416064 | 3336 kB |         15.5
+ ix_appt_doctor_slot                | index             | appointments                       |  8699904 | 8496 kB |         39.5
+ ix_appt_open_slot_end              | index             | appointments                       |    40960 | 40 kB   |          0.2
+ ix_appt_patient                    | index             | appointments                       |  7331840 | 7160 kB |         33.3
+ ix_appt_slot_cover                 | index             | appointments                       |  8847360 | 8640 kB |         40.2
+ doctor_rating_summary              | materialized view |                                    |   196608 | 192 kB  |             
+ ux_rating_summary_doctor           | index             | doctor_rating_summary              |    90112 | 88 kB   |         45.8
+ doctor_schedules                   | table             |                                    |  1843200 | 1800 kB |             
+ ix_sched_clinic                    | index             | doctor_schedules                   |   253952 | 248 kB  |         13.8
+ pk_doctor_schedules                | index             | doctor_schedules                   |   974848 | 952 kB  |         52.9
+ monthly_medicine_by_specialization | materialized view |                                    |   311296 | 304 kB  |             
+ ux_monthly_medicine                | index             | monthly_medicine_by_specialization |   253952 | 248 kB  |         81.6
+ patients                           | table             |                                    |  4366336 | 4264 kB |             
+ ix_patients_allergies              | index             | patients                           |    81920 | 80 kB   |          1.9
+ patients_pkey                      | index             | patients                           |   917504 | 896 kB  |         21.0
+ uq_patients_email                  | index             | patients                           |  2007040 | 1960 kB |         46.0
+ uq_patients_phone                  | index             | patients                           |  1277952 | 1248 kB |         29.3
+ prescriptions                      | table             |                                    |  7471104 | 7296 kB |             
+ ix_presc_followup                  | index             | prescriptions                      |   229376 | 224 kB  |          3.1
+ prescriptions_pkey                 | index             | prescriptions                      |  2195456 | 2144 kB |         29.4
+ uq_prescriptions_appointment       | index             | prescriptions                      |  2195456 | 2144 kB |         29.4
+(22 rows)
+
+ db_with_phase4_objects | db_phase3 
+------------------------+-----------
+ 106 MB                 | 81 MB
+(1 row)
+
+# The same indexes in the benchmarked database 'practo' AFTER all benchmark passes (rolled-back writes leave dead index entries until VACUUM):
+ix_appt_doctor_slot | 11 MB
+ix_appt_open_slot_end | 48 kB
+ix_appt_patient | 9592 kB
+ix_appt_slot_cover | 8920 kB
+ix_patients_allergies | 80 kB
+ix_presc_followup | 232 kB
+ix_sched_clinic | 248 kB

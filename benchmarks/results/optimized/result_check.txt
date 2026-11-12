@@ -1,0 +1,34 @@
+# ./benchmarks/compare_results.sh practo_base practo
+# practo_base = Phase 3 state (no sql/05_indexes.sql), runs queries/workload_30.sql
+# practo      = with sql/05_indexes.sql, runs sql/06_optimized_queries.sql
+query type  rows_orig  rows_opt  set_orig     set_opt      keys_orig    keys_opt      verdict
+R01  READ         20        20  858d82efd82d 858d82efd82d 514406ff0fae 514406ff0fae  IDENTICAL
+R02  READ          9         9  4ed972de5692 4ed972de5692 e62d29d9345d e62d29d9345d  IDENTICAL
+R03  READ         12        12  0db0b11180e4 0db0b11180e4 0db0b11180e4 0db0b11180e4  IDENTICAL
+R04  READ          2         2  5ce12538a236 5ce12538a236 6c2ff5ef328d 6c2ff5ef328d  IDENTICAL
+R05  READ          3         3  0feb74b19814 0feb74b19814 802e9d1fd244 802e9d1fd244  IDENTICAL
+R06  READ          1         1  959f692798c8 959f692798c8 -            -             IDENTICAL
+R07  READ          2         2  70d4988e4e1c 70d4988e4e1c 6ddb4095eb71 6ddb4095eb71  IDENTICAL
+R08  READ         15        15  072eeb7a537d 072eeb7a537d 5a3e80a2fd7c 5a3e80a2fd7c  IDENTICAL
+R09  READ         20        20  5466a6629c4d 5466a6629c4d 4a0bffa983ca 4a0bffa983ca  SAME
+R10  READ        726       726  b34032c8d4f1 b34032c8d4f1 8a8fbf868485 8a8fbf868485  SAME
+R11  READ        430       430  68adf4067469 68adf4067469 fffc0d2e0ec5 fffc0d2e0ec5  SAME
+R12  READ         14        14  c064a56a99c1 c064a56a99c1 2b031e1c08ac 2b031e1c08ac  IDENTICAL
+R13  READ          0       292  d41d8cd98f00 1743f29b7267 -            -             DIFFERENT
+R14  READ         20        20  8671644c7d21 8671644c7d21 0ecdf6e3799a 0ecdf6e3799a  IDENTICAL
+R15  READ        225       225  06f0ae3c638c 06f0ae3c638c 794008fa3844 794008fa3844  SAME
+R16  READ         20        20  382edc460b1c 382edc460b1c c5bb56319ddd c5bb56319ddd  IDENTICAL
+R17  READ         36        36  3ab91436a2dc 3ab91436a2dc 4c26328b15c9 4c26328b15c9  IDENTICAL
+R18  READ        360       360  64759612e2b0 64759612e2b0 385128fbf1c1 385128fbf1c1  IDENTICAL
+R19  READ        480       480  1c05ea7d9628 1c05ea7d9628 a23c1b43e517 a23c1b43e517  IDENTICAL
+R20  READ         26        26  4f11f5098b69 4f11f5098b69 5aeaa657b5c5 5aeaa657b5c5  IDENTICAL
+R21  READ        100       100  cc88d3936b88 46feba8d187e 58ca2fb81f49 58ca2fb81f49  TIES
+R22  READ         25        25  0121c0b918d1 59d36ed91619 4a1d7821b5d5 4a1d7821b5d5  TIES
+R23  READ          1         1  ee6a671c24f7 ee6a671c24f7 -            -             IDENTICAL
+R24  READ        559       559  d7b495cc8ef7 d7b495cc8ef7 1c702e426eb0 1c702e426eb0  SAME
+R25  READ        113       113  e0948fcbe146 e0948fcbe146 d2ad48547cc6 d2ad48547cc6  IDENTICAL
+W01  WRITE         1         1  3bfc664bbe9a 3bfc664bbe9a -            -             IDENTICAL
+W02  WRITE         1         1  af4ebe65d3db af4ebe65d3db -            -             IDENTICAL
+W03  WRITE         1         1  9f6bed829512 9f6bed829512 -            -             IDENTICAL
+W04  WRITE       329       329  350207d10c7e 350207d10c7e -            -             IDENTICAL
+W05  WRITE         3         3  5573260e3418 5573260e3418 -            -             IDENTICAL

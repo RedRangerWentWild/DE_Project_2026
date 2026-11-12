@@ -1,0 +1,18 @@
+# W03 on practo_base (Phase 3 state, no tuning indexes), 500 transactions, one connection; the statement runs inside BEGIN ... ROLLBACK
+pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
+transaction type: /tmp/claude-0/-home-user/dc4f4dee-c1da-5209-a13b-9c34ae1ba663/scratchpad/de/pgb/W03.sql
+scaling factor: 1
+query mode: simple
+number of clients: 1
+number of threads: 1
+maximum number of tries: 1
+number of transactions per client: 500
+number of transactions actually processed: 500/500
+number of failed transactions: 0 (0.000%)
+latency average = 0.171 ms
+initial connection time = 1.886 ms
+tps = 5854.183985 (without initial connection time)
+statement latencies in milliseconds and failures:
+         0.031           0  BEGIN;
+         0.094           0  UPDATE prescriptions SET notes = 'Review blood sugar after 2 weeks', follow_up_date = '2026-07-15' WHERE appointment_id = 18872
+         0.045           0  ROLLBACK;

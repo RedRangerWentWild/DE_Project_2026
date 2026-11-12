@@ -1,0 +1,48 @@
+=== R12 run 1 ===
+GroupAggregate  (cost=5016.69..5033.37 rows=734 width=25) (actual time=44.314..49.365 rows=14 loops=1)
+  Group Key: (date_trunc('month'::text, slot_start)), consult_type
+  Buffers: shared hit=2735
+  ->  Sort  (cost=5016.69..5018.57 rows=750 width=17) (actual time=43.477..45.559 rows=51501 loops=1)
+        Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+        Sort Method: quicksort  Memory: 3735kB
+        Buffers: shared hit=2735
+        ->  Seq Scan on appointments  (cost=0.00..4980.88 rows=750 width=17) (actual time=16.214..34.772 rows=51501 loops=1)
+              Filter: (EXTRACT(year FROM slot_start) = '2026'::numeric)
+              Rows Removed by Filter: 98499
+              Buffers: shared hit=2729
+Planning:
+  Buffers: shared hit=191
+Planning Time: 0.423 ms
+Execution Time: 49.544 ms
+=== R12 run 2 ===
+GroupAggregate  (cost=5016.69..5033.37 rows=734 width=25) (actual time=44.335..50.277 rows=14 loops=1)
+  Group Key: (date_trunc('month'::text, slot_start)), consult_type
+  Buffers: shared hit=2735
+  ->  Sort  (cost=5016.69..5018.57 rows=750 width=17) (actual time=43.415..45.877 rows=51501 loops=1)
+        Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+        Sort Method: quicksort  Memory: 3735kB
+        Buffers: shared hit=2735
+        ->  Seq Scan on appointments  (cost=0.00..4980.88 rows=750 width=17) (actual time=15.799..34.542 rows=51501 loops=1)
+              Filter: (EXTRACT(year FROM slot_start) = '2026'::numeric)
+              Rows Removed by Filter: 98499
+              Buffers: shared hit=2729
+Planning:
+  Buffers: shared hit=191
+Planning Time: 0.413 ms
+Execution Time: 50.502 ms
+=== R12 run 3 ===
+GroupAggregate  (cost=5016.69..5033.37 rows=734 width=25) (actual time=46.878..51.986 rows=14 loops=1)
+  Group Key: (date_trunc('month'::text, slot_start)), consult_type
+  Buffers: shared hit=2735
+  ->  Sort  (cost=5016.69..5018.57 rows=750 width=17) (actual time=46.070..48.180 rows=51501 loops=1)
+        Sort Key: (date_trunc('month'::text, slot_start)), consult_type
+        Sort Method: quicksort  Memory: 3735kB
+        Buffers: shared hit=2735
+        ->  Seq Scan on appointments  (cost=0.00..4980.88 rows=750 width=17) (actual time=16.806..37.098 rows=51501 loops=1)
+              Filter: (EXTRACT(year FROM slot_start) = '2026'::numeric)
+              Rows Removed by Filter: 98499
+              Buffers: shared hit=2729
+Planning:
+  Buffers: shared hit=191
+Planning Time: 0.434 ms
+Execution Time: 52.188 ms

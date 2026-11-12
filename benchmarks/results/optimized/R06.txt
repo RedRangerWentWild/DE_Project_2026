@@ -1,0 +1,40 @@
+=== R06 run 1 ===
+Index Scan using uq_patients_phone on patients  (cost=0.29..8.31 rows=1 width=23) (actual time=0.028..0.028 rows=1 loops=1)
+  Index Cond: ((phone)::text = '9400000090'::text)
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.470 ms
+Execution Time: 0.093 ms
+=== R06 run 2 ===
+Index Scan using uq_patients_phone on patients  (cost=0.29..8.31 rows=1 width=23) (actual time=0.027..0.027 rows=1 loops=1)
+  Index Cond: ((phone)::text = '9400000090'::text)
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.493 ms
+Execution Time: 0.060 ms
+=== R06 run 3 ===
+Index Scan using uq_patients_phone on patients  (cost=0.29..8.31 rows=1 width=23) (actual time=0.026..0.026 rows=1 loops=1)
+  Index Cond: ((phone)::text = '9400000090'::text)
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.470 ms
+Execution Time: 0.057 ms
+=== R06 run 4 ===
+Index Scan using uq_patients_phone on patients  (cost=0.29..8.31 rows=1 width=23) (actual time=0.022..0.022 rows=1 loops=1)
+  Index Cond: ((phone)::text = '9400000090'::text)
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.312 ms
+Execution Time: 0.047 ms
+=== R06 run 5 ===
+Index Scan using uq_patients_phone on patients  (cost=0.29..8.31 rows=1 width=23) (actual time=0.021..0.021 rows=1 loops=1)
+  Index Cond: ((phone)::text = '9400000090'::text)
+  Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.313 ms
+Execution Time: 0.046 ms

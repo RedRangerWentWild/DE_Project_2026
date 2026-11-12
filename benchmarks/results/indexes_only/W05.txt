@@ -1,0 +1,33 @@
+=== W05 run 1 ===
+Update on appointments  (cost=0.42..8.44 rows=0 width=0) (actual time=0.321..0.322 rows=0 loops=1)
+  Buffers: shared hit=90
+  ->  Index Scan using ix_appt_doctor_slot on appointments  (cost=0.42..8.44 rows=1 width=86) (actual time=0.026..0.034 rows=3 loops=1)
+        Index Cond: ((doctor_id = 504) AND (slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone))
+        Filter: ((status)::text = 'BOOKED'::text)
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=243
+Planning Time: 0.576 ms
+Execution Time: 0.362 ms
+=== W05 run 2 ===
+Update on appointments  (cost=0.42..8.44 rows=0 width=0) (actual time=0.352..0.352 rows=0 loops=1)
+  Buffers: shared hit=97
+  ->  Index Scan using ix_appt_doctor_slot on appointments  (cost=0.42..8.44 rows=1 width=86) (actual time=0.030..0.043 rows=3 loops=1)
+        Index Cond: ((doctor_id = 504) AND (slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone))
+        Filter: ((status)::text = 'BOOKED'::text)
+        Buffers: shared hit=10
+Planning:
+  Buffers: shared hit=243
+Planning Time: 0.542 ms
+Execution Time: 0.392 ms
+=== W05 run 3 ===
+Update on appointments  (cost=0.42..8.44 rows=0 width=0) (actual time=0.333..0.333 rows=0 loops=1)
+  Buffers: shared hit=100
+  ->  Index Scan using ix_appt_doctor_slot on appointments  (cost=0.42..8.44 rows=1 width=86) (actual time=0.027..0.040 rows=3 loops=1)
+        Index Cond: ((doctor_id = 504) AND (slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone))
+        Filter: ((status)::text = 'BOOKED'::text)
+        Buffers: shared hit=13
+Planning:
+  Buffers: shared hit=243
+Planning Time: 0.581 ms
+Execution Time: 0.372 ms
