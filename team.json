@@ -1,0 +1,11 @@
+{
+  "team_number": "T0015",
+  "group_lead": { "name": "Aadi Kalra", "enrollment_no": "", "github": "RedRangerWentWild" },
+  "members": [
+    { "name": "Tushar Khemka", "enrollment_no": "", "github": "" },
+    { "name": "Rudransh Singh", "enrollment_no": "", "github": "" },
+    { "name": "Abhishek Panigrahi", "enrollment_no": "", "github": "" }
+  ],
+  "postgres_version": "14.20",
+  "laptop_used_for_benchmarks": "MacBook Pro 14-inch (Apple M4, 16 GB RAM, macOS)"
+}

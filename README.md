@@ -22,12 +22,12 @@
 
 | Role | Name | Enrollment No. | GitHub Username |
 |------|------|----------------|-----------------|
-| Group Lead | | | |
-| Member 2 | | | |
-| Member 3 | | | |
-| Member 4 | | | |
+| Group Lead | Aadi Kalra | | RedRangerWentWild |
+| Member 2 | Tushar Khemka | | |
+| Member 3 | Rudransh Singh | | |
+| Member 4 | Abhishek Panigrahi | | |
 
-**Team No.:** ____ · **Section:** ____ · **Repository URL:** ____
+**Team No.:** T0015 (Bluetrace) · **Section:** E · **Repository URL:** https://github.com/RedRangerWentWild/DE_Project_2026
 
 ---
 
