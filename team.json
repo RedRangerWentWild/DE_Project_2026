@@ -1,10 +1,26 @@
 {
   "team_number": "T0015",
-  "group_lead": { "name": "Aadi Kalra", "enrollment_no": "", "github": "RedRangerWentWild" },
+  "group_lead": {
+    "name": "Aadi Kalra",
+    "enrollment_no": "2501010002",
+    "github": "RedRangerWentWild"
+  },
   "members": [
-    { "name": "Tushar Khemka", "enrollment_no": "", "github": "" },
-    { "name": "Rudransh Singh", "enrollment_no": "", "github": "" },
-    { "name": "Abhishek Panigrahi", "enrollment_no": "", "github": "" }
+    {
+      "name": "Tushar Khemka",
+      "enrollment_no": "2501010482",
+      "github": "thetusharkhemka"
+    },
+    {
+      "name": "Rudransh Singh",
+      "enrollment_no": "2501010390",
+      "github": ""
+    },
+    {
+      "name": "Abhishek Panigrahi",
+      "enrollment_no": "2501010019",
+      "github": "Abhishek-047"
+    }
   ],
   "postgres_version": "14.20",
   "laptop_used_for_benchmarks": "MacBook Pro 14-inch (Apple M4, 16 GB RAM, macOS)"
