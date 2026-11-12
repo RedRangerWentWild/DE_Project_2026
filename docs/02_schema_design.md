@@ -389,4 +389,4 @@ No row was rejected by the load. The problems below are in the data itself; in e
 
 ## 10. Environment note
 
-Developed and tested on PostgreSQL 14.20 (Homebrew, macOS, Apple Silicon). The brief asks for PostgreSQL 15 or newer; the schema uses nothing version-specific and should run unchanged on 15+. Session time zone is `Asia/Kolkata`; queries that use `DATE(slot_start)` depend on it.
+Tested on PostgreSQL 16.15 (Homebrew, macOS, Apple Silicon): schema, load and the 30-query workload all run without errors. Session time zone is `Asia/Kolkata`; queries that use `DATE(slot_start)` depend on it.
