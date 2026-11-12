@@ -1,0 +1,84 @@
+=== R03 run 1 ===
+Merge Anti Join  (cost=5134.37..5145.19 rows=1983 width=8) (actual time=15.990..15.995 rows=12 loops=1)
+  Merge Cond: (slot.slot = a.slot_start)
+  Buffers: shared hit=2726
+  ->  Sort  (cost=159.76..164.76 rows=2000 width=8) (actual time=0.055..0.057 rows=12 loops=1)
+        Sort Key: slot.slot
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=6
+        ->  Nested Loop  (cost=0.31..50.10 rows=2000 width=8) (actual time=0.043..0.047 rows=12 loops=1)
+              Buffers: shared hit=6
+              ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..10.08 rows=2 width=18) (actual time=0.026..0.027 rows=1 loops=1)
+                    Index Cond: ((doctor_id = 217) AND (weekday = 5))
+                    Filter: (clinic_id IS NOT NULL)
+                    Rows Removed by Filter: 1
+                    Buffers: shared hit=6
+              ->  Function Scan on generate_series slot  (cost=0.02..10.03 rows=1000 width=8) (actual time=0.015..0.016 rows=12 loops=1)
+  ->  Sort  (cost=4974.61..4974.93 rows=131 width=8) (actual time=15.924..15.928 rows=72 loops=1)
+        Sort Key: a.slot_start
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=2720
+        ->  Seq Scan on appointments a  (cost=0.00..4970.00 rows=131 width=8) (actual time=0.374..15.899 rows=72 loops=1)
+              Filter: (((status)::text <> 'CANCELLED'::text) AND (doctor_id = 217))
+              Rows Removed by Filter: 149928
+              Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=298
+Planning Time: 0.590 ms
+Execution Time: 16.074 ms
+=== R03 run 2 ===
+Merge Anti Join  (cost=5134.37..5145.19 rows=1983 width=8) (actual time=23.154..23.160 rows=12 loops=1)
+  Merge Cond: (slot.slot = a.slot_start)
+  Buffers: shared hit=2726
+  ->  Sort  (cost=159.76..164.76 rows=2000 width=8) (actual time=0.077..0.080 rows=12 loops=1)
+        Sort Key: slot.slot
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=6
+        ->  Nested Loop  (cost=0.31..50.10 rows=2000 width=8) (actual time=0.060..0.066 rows=12 loops=1)
+              Buffers: shared hit=6
+              ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..10.08 rows=2 width=18) (actual time=0.037..0.039 rows=1 loops=1)
+                    Index Cond: ((doctor_id = 217) AND (weekday = 5))
+                    Filter: (clinic_id IS NOT NULL)
+                    Rows Removed by Filter: 1
+                    Buffers: shared hit=6
+              ->  Function Scan on generate_series slot  (cost=0.02..10.03 rows=1000 width=8) (actual time=0.020..0.021 rows=12 loops=1)
+  ->  Sort  (cost=4974.61..4974.93 rows=131 width=8) (actual time=23.056..23.061 rows=72 loops=1)
+        Sort Key: a.slot_start
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=2720
+        ->  Seq Scan on appointments a  (cost=0.00..4970.00 rows=131 width=8) (actual time=0.512..23.014 rows=72 loops=1)
+              Filter: (((status)::text <> 'CANCELLED'::text) AND (doctor_id = 217))
+              Rows Removed by Filter: 149928
+              Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=298
+Planning Time: 0.829 ms
+Execution Time: 23.272 ms
+=== R03 run 3 ===
+Merge Anti Join  (cost=5134.37..5145.19 rows=1983 width=8) (actual time=15.220..15.224 rows=12 loops=1)
+  Merge Cond: (slot.slot = a.slot_start)
+  Buffers: shared hit=2726
+  ->  Sort  (cost=159.76..164.76 rows=2000 width=8) (actual time=0.062..0.064 rows=12 loops=1)
+        Sort Key: slot.slot
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=6
+        ->  Nested Loop  (cost=0.31..50.10 rows=2000 width=8) (actual time=0.050..0.054 rows=12 loops=1)
+              Buffers: shared hit=6
+              ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.29..10.08 rows=2 width=18) (actual time=0.026..0.027 rows=1 loops=1)
+                    Index Cond: ((doctor_id = 217) AND (weekday = 5))
+                    Filter: (clinic_id IS NOT NULL)
+                    Rows Removed by Filter: 1
+                    Buffers: shared hit=6
+              ->  Function Scan on generate_series slot  (cost=0.02..10.03 rows=1000 width=8) (actual time=0.022..0.023 rows=12 loops=1)
+  ->  Sort  (cost=4974.61..4974.93 rows=131 width=8) (actual time=15.147..15.150 rows=72 loops=1)
+        Sort Key: a.slot_start
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=2720
+        ->  Seq Scan on appointments a  (cost=0.00..4970.00 rows=131 width=8) (actual time=0.338..15.116 rows=72 loops=1)
+              Filter: (((status)::text <> 'CANCELLED'::text) AND (doctor_id = 217))
+              Rows Removed by Filter: 149928
+              Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=298
+Planning Time: 0.602 ms
+Execution Time: 15.305 ms

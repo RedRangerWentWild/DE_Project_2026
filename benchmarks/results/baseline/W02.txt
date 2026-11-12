@@ -1,0 +1,63 @@
+=== W02 run 1 ===
+Update on appointments  (cost=5720.44..5728.46 rows=0 width=0) (actual time=16.252..16.254 rows=0 loops=1)
+  Buffers: shared hit=2776 dirtied=1
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=5720.02..5720.02 rows=1 width=12) (actual time=15.947..15.949 rows=1 loops=1)
+          Buffers: shared hit=2723
+          ->  Sort  (cost=5720.02..5720.02 rows=3 width=12) (actual time=15.946..15.946 rows=1 loops=1)
+                Sort Key: appointments_1.slot_start
+                Sort Method: top-N heapsort  Memory: 25kB
+                Buffers: shared hit=2723
+                ->  Seq Scan on appointments appointments_1  (cost=0.00..5720.00 rows=3 width=12) (actual time=15.423..15.897 rows=227 loops=1)
+                      Filter: ((slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone) AND ((status)::text = 'BOOKED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                      Rows Removed by Filter: 149773
+                      Buffers: shared hit=2720
+  ->  Index Scan using appointments_pkey on appointments  (cost=0.42..8.44 rows=1 width=56) (actual time=15.969..15.972 rows=1 loops=1)
+        Index Cond: (appointment_id = $0)
+        Buffers: shared hit=2729
+Planning:
+  Buffers: shared hit=94
+Planning Time: 0.390 ms
+Execution Time: 16.324 ms
+=== W02 run 2 ===
+Update on appointments  (cost=5720.44..5728.46 rows=0 width=0) (actual time=20.551..20.554 rows=0 loops=1)
+  Buffers: shared hit=2776 dirtied=1
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=5720.02..5720.02 rows=1 width=12) (actual time=20.150..20.151 rows=1 loops=1)
+          Buffers: shared hit=2723
+          ->  Sort  (cost=5720.02..5720.02 rows=3 width=12) (actual time=20.148..20.149 rows=1 loops=1)
+                Sort Key: appointments_1.slot_start
+                Sort Method: top-N heapsort  Memory: 25kB
+                Buffers: shared hit=2723
+                ->  Seq Scan on appointments appointments_1  (cost=0.00..5720.00 rows=3 width=12) (actual time=19.321..20.095 rows=227 loops=1)
+                      Filter: ((slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone) AND ((status)::text = 'BOOKED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                      Rows Removed by Filter: 149773
+                      Buffers: shared hit=2720
+  ->  Index Scan using appointments_pkey on appointments  (cost=0.42..8.44 rows=1 width=56) (actual time=20.173..20.178 rows=1 loops=1)
+        Index Cond: (appointment_id = $0)
+        Buffers: shared hit=2729
+Planning:
+  Buffers: shared hit=94
+Planning Time: 0.383 ms
+Execution Time: 20.631 ms
+=== W02 run 3 ===
+Update on appointments  (cost=5720.44..5728.46 rows=0 width=0) (actual time=14.033..14.034 rows=0 loops=1)
+  Buffers: shared hit=2776 dirtied=1
+  InitPlan 1 (returns $0)
+    ->  Limit  (cost=5720.02..5720.02 rows=1 width=12) (actual time=13.723..13.724 rows=1 loops=1)
+          Buffers: shared hit=2723
+          ->  Sort  (cost=5720.02..5720.02 rows=3 width=12) (actual time=13.721..13.722 rows=1 loops=1)
+                Sort Key: appointments_1.slot_start
+                Sort Method: top-N heapsort  Memory: 25kB
+                Buffers: shared hit=2723
+                ->  Seq Scan on appointments appointments_1  (cost=0.00..5720.00 rows=3 width=12) (actual time=13.198..13.663 rows=227 loops=1)
+                      Filter: ((slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone) AND ((status)::text = 'BOOKED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                      Rows Removed by Filter: 149773
+                      Buffers: shared hit=2720
+  ->  Index Scan using appointments_pkey on appointments  (cost=0.42..8.44 rows=1 width=56) (actual time=13.744..13.747 rows=1 loops=1)
+        Index Cond: (appointment_id = $0)
+        Buffers: shared hit=2729
+Planning:
+  Buffers: shared hit=94
+Planning Time: 0.393 ms
+Execution Time: 14.101 ms

@@ -1,0 +1,90 @@
+=== R09 run 1 ===
+Limit  (cost=5709.63..5709.68 rows=20 width=44) (actual time=14.185..14.760 rows=20 loops=1)
+  Buffers: shared hit=2723
+  ->  Sort  (cost=5709.63..5710.63 rows=399 width=44) (actual time=14.183..14.757 rows=20 loops=1)
+        Sort Key: (round(avg((EXTRACT(epoch FROM (consult_started_at - slot_start)) / '60'::numeric)), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=2723
+        ->  Finalize HashAggregate  (cost=5680.06..5699.01 rows=399 width=44) (actual time=13.727..14.639 rows=509 loops=1)
+              Group Key: clinic_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 577kB
+              Rows Removed by Filter: 634
+              Buffers: shared hit=2720
+              ->  Gather  (cost=5533.43..5668.09 rows=1197 width=44) (actual time=12.202..13.178 rows=1974 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+                    Buffers: shared hit=2720
+                    ->  Partial HashAggregate  (cost=4533.43..4548.39 rows=1197 width=44) (actual time=10.480..10.702 rows=987 loops=2)
+                          Group Key: clinic_id
+                          Batches: 1  Memory Usage: 577kB
+                          Buffers: shared hit=2720
+                          Worker 0:  Batches: 1  Memory Usage: 577kB
+                          ->  Parallel Seq Scan on appointments a  (cost=0.00..4484.71 rows=3248 width=20) (actual time=8.071..9.098 rows=2811 loops=2)
+                                Filter: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND ((status)::text = 'COMPLETED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                                Rows Removed by Filter: 72189
+                                Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.644 ms
+Execution Time: 14.968 ms
+=== R09 run 2 ===
+Limit  (cost=5709.63..5709.68 rows=20 width=44) (actual time=15.096..16.361 rows=20 loops=1)
+  Buffers: shared hit=2723
+  ->  Sort  (cost=5709.63..5710.63 rows=399 width=44) (actual time=15.094..16.357 rows=20 loops=1)
+        Sort Key: (round(avg((EXTRACT(epoch FROM (consult_started_at - slot_start)) / '60'::numeric)), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=2723
+        ->  Finalize HashAggregate  (cost=5680.06..5699.01 rows=399 width=44) (actual time=14.570..16.239 rows=509 loops=1)
+              Group Key: clinic_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 577kB
+              Rows Removed by Filter: 634
+              Buffers: shared hit=2720
+              ->  Gather  (cost=5533.43..5668.09 rows=1197 width=44) (actual time=13.019..14.725 rows=1951 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+                    Buffers: shared hit=2720
+                    ->  Partial HashAggregate  (cost=4533.43..4548.39 rows=1197 width=44) (actual time=10.971..11.327 rows=976 loops=2)
+                          Group Key: clinic_id
+                          Batches: 1  Memory Usage: 577kB
+                          Buffers: shared hit=2720
+                          Worker 0:  Batches: 1  Memory Usage: 577kB
+                          ->  Parallel Seq Scan on appointments a  (cost=0.00..4484.71 rows=3248 width=20) (actual time=8.149..9.302 rows=2811 loops=2)
+                                Filter: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND ((status)::text = 'COMPLETED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                                Rows Removed by Filter: 72189
+                                Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.525 ms
+Execution Time: 16.592 ms
+=== R09 run 3 ===
+Limit  (cost=5709.63..5709.68 rows=20 width=44) (actual time=16.960..17.163 rows=20 loops=1)
+  Buffers: shared hit=2723
+  ->  Sort  (cost=5709.63..5710.63 rows=399 width=44) (actual time=16.958..17.158 rows=20 loops=1)
+        Sort Key: (round(avg((EXTRACT(epoch FROM (consult_started_at - slot_start)) / '60'::numeric)), 1)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=2723
+        ->  Finalize HashAggregate  (cost=5680.06..5699.01 rows=399 width=44) (actual time=16.204..16.956 rows=509 loops=1)
+              Group Key: clinic_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 577kB
+              Rows Removed by Filter: 634
+              Buffers: shared hit=2720
+              ->  Gather  (cost=5533.43..5668.09 rows=1197 width=44) (actual time=13.866..14.751 rows=1980 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+                    Buffers: shared hit=2720
+                    ->  Partial HashAggregate  (cost=4533.43..4548.39 rows=1197 width=44) (actual time=12.215..12.665 rows=990 loops=2)
+                          Group Key: clinic_id
+                          Batches: 1  Memory Usage: 577kB
+                          Buffers: shared hit=2720
+                          Worker 0:  Batches: 1  Memory Usage: 577kB
+                          ->  Parallel Seq Scan on appointments a  (cost=0.00..4484.71 rows=3248 width=20) (actual time=8.486..10.024 rows=2811 loops=2)
+                                Filter: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND ((status)::text = 'COMPLETED'::text) AND ((consult_type)::text = 'IN_CLINIC'::text))
+                                Rows Removed by Filter: 72189
+                                Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=123
+Planning Time: 0.594 ms
+Execution Time: 17.362 ms

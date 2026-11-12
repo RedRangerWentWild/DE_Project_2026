@@ -1,0 +1,81 @@
+=== R14 run 1 ===
+Limit  (cost=5968.39..5968.44 rows=20 width=76) (actual time=53.590..53.596 rows=20 loops=1)
+  Buffers: shared hit=3008
+  ->  Sort  (cost=5968.39..5970.89 rows=1000 width=76) (actual time=53.588..53.592 rows=20 loops=1)
+        Sort Key: (round(avg(r.rating), 2)) DESC, (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=3008
+        ->  HashAggregate  (cost=5881.78..5941.78 rows=1000 width=76) (actual time=52.052..53.317 rows=1394 loops=1)
+              Group Key: a.doctor_id
+              Filter: (count(*) >= 10)
+              Batches: 1  Memory Usage: 881kB
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=3002
+              ->  Hash Join  (cost=964.63..5578.39 rows=30339 width=7) (actual time=7.476..45.609 rows=30339 loops=1)
+                    Hash Cond: (a.appointment_id = r.appointment_id)
+                    Buffers: shared hit=3002
+                    ->  Seq Scan on appointments a  (cost=0.00..4220.00 rows=150000 width=8) (actual time=0.003..10.889 rows=150000 loops=1)
+                          Buffers: shared hit=2720
+                    ->  Hash  (cost=585.39..585.39 rows=30339 width=7) (actual time=7.326..7.327 rows=30339 loops=1)
+                          Buckets: 32768  Batches: 1  Memory Usage: 1442kB
+                          Buffers: shared hit=282
+                          ->  Seq Scan on doctor_reviews r  (cost=0.00..585.39 rows=30339 width=7) (actual time=0.009..3.252 rows=30339 loops=1)
+                                Buffers: shared hit=282
+Planning:
+  Buffers: shared hit=179
+Planning Time: 0.622 ms
+Execution Time: 53.799 ms
+=== R14 run 2 ===
+Limit  (cost=5968.39..5968.44 rows=20 width=76) (actual time=52.615..52.621 rows=20 loops=1)
+  Buffers: shared hit=3008
+  ->  Sort  (cost=5968.39..5970.89 rows=1000 width=76) (actual time=52.613..52.617 rows=20 loops=1)
+        Sort Key: (round(avg(r.rating), 2)) DESC, (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=3008
+        ->  HashAggregate  (cost=5881.78..5941.78 rows=1000 width=76) (actual time=50.836..52.298 rows=1394 loops=1)
+              Group Key: a.doctor_id
+              Filter: (count(*) >= 10)
+              Batches: 1  Memory Usage: 881kB
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=3002
+              ->  Hash Join  (cost=964.63..5578.39 rows=30339 width=7) (actual time=6.988..44.686 rows=30339 loops=1)
+                    Hash Cond: (a.appointment_id = r.appointment_id)
+                    Buffers: shared hit=3002
+                    ->  Seq Scan on appointments a  (cost=0.00..4220.00 rows=150000 width=8) (actual time=0.002..10.579 rows=150000 loops=1)
+                          Buffers: shared hit=2720
+                    ->  Hash  (cost=585.39..585.39 rows=30339 width=7) (actual time=6.857..6.858 rows=30339 loops=1)
+                          Buckets: 32768  Batches: 1  Memory Usage: 1442kB
+                          Buffers: shared hit=282
+                          ->  Seq Scan on doctor_reviews r  (cost=0.00..585.39 rows=30339 width=7) (actual time=0.007..2.904 rows=30339 loops=1)
+                                Buffers: shared hit=282
+Planning:
+  Buffers: shared hit=179
+Planning Time: 0.690 ms
+Execution Time: 52.818 ms
+=== R14 run 3 ===
+Limit  (cost=5968.39..5968.44 rows=20 width=76) (actual time=52.650..52.655 rows=20 loops=1)
+  Buffers: shared hit=3008
+  ->  Sort  (cost=5968.39..5970.89 rows=1000 width=76) (actual time=52.648..52.651 rows=20 loops=1)
+        Sort Key: (round(avg(r.rating), 2)) DESC, (count(*)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=3008
+        ->  HashAggregate  (cost=5881.78..5941.78 rows=1000 width=76) (actual time=50.954..52.349 rows=1394 loops=1)
+              Group Key: a.doctor_id
+              Filter: (count(*) >= 10)
+              Batches: 1  Memory Usage: 881kB
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=3002
+              ->  Hash Join  (cost=964.63..5578.39 rows=30339 width=7) (actual time=6.651..44.595 rows=30339 loops=1)
+                    Hash Cond: (a.appointment_id = r.appointment_id)
+                    Buffers: shared hit=3002
+                    ->  Seq Scan on appointments a  (cost=0.00..4220.00 rows=150000 width=8) (actual time=0.002..10.766 rows=150000 loops=1)
+                          Buffers: shared hit=2720
+                    ->  Hash  (cost=585.39..585.39 rows=30339 width=7) (actual time=6.493..6.493 rows=30339 loops=1)
+                          Buckets: 32768  Batches: 1  Memory Usage: 1442kB
+                          Buffers: shared hit=282
+                          ->  Seq Scan on doctor_reviews r  (cost=0.00..585.39 rows=30339 width=7) (actual time=0.007..2.853 rows=30339 loops=1)
+                                Buffers: shared hit=282
+Planning:
+  Buffers: shared hit=179
+Planning Time: 0.588 ms
+Execution Time: 52.847 ms

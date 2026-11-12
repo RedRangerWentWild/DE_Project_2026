@@ -1,0 +1,33 @@
+=== W05 run 1 ===
+Update on appointments  (cost=0.00..5720.00 rows=0 width=0) (actual time=20.472..20.472 rows=0 loops=1)
+  Buffers: shared hit=2786
+  ->  Seq Scan on appointments  (cost=0.00..5720.00 rows=1 width=86) (actual time=19.758..20.027 rows=3 loops=1)
+        Filter: ((slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone) AND (doctor_id = 504) AND ((status)::text = 'BOOKED'::text))
+        Rows Removed by Filter: 149997
+        Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=79
+Planning Time: 0.438 ms
+Execution Time: 20.530 ms
+=== W05 run 2 ===
+Update on appointments  (cost=0.00..5720.00 rows=0 width=0) (actual time=17.313..17.314 rows=0 loops=1)
+  Buffers: shared hit=2786
+  ->  Seq Scan on appointments  (cost=0.00..5720.00 rows=1 width=86) (actual time=16.824..16.990 rows=3 loops=1)
+        Filter: ((slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone) AND (doctor_id = 504) AND ((status)::text = 'BOOKED'::text))
+        Rows Removed by Filter: 149997
+        Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=79
+Planning Time: 0.338 ms
+Execution Time: 17.364 ms
+=== W05 run 3 ===
+Update on appointments  (cost=0.00..5720.00 rows=0 width=0) (actual time=19.414..19.415 rows=0 loops=1)
+  Buffers: shared hit=2786
+  ->  Seq Scan on appointments  (cost=0.00..5720.00 rows=1 width=86) (actual time=18.713..18.946 rows=3 loops=1)
+        Filter: ((slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone) AND (doctor_id = 504) AND ((status)::text = 'BOOKED'::text))
+        Rows Removed by Filter: 149997
+        Buffers: shared hit=2720
+Planning:
+  Buffers: shared hit=79
+Planning Time: 0.477 ms
+Execution Time: 19.476 ms

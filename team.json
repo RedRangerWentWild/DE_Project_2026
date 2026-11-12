@@ -23,5 +23,5 @@
     }
   ],
   "postgres_version": "16.15",
-  "laptop_used_for_benchmarks": "MacBook Pro 14-inch (Apple M4, 16 GB RAM, macOS)"
+  "laptop_used_for_benchmarks": "Linux VM: Intel Xeon @ 2.10 GHz, 4 vCPU, 16 GB RAM, Ubuntu 24.04 (Phase 3 and Phase 4 measurements)"
 }
