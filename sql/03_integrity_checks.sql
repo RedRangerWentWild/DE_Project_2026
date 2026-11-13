@@ -82,3 +82,62 @@ SELECT 'IC6' AS ic,
        (SELECT count(*) FROM prescriptions p
         WHERE NOT EXISTS (SELECT 1 FROM prescription_items i
                           WHERE i.prescription_id = p.prescription_id)) AS presc_without_items;
+
+-- IC7: no two active (not cancelled) appointments share a doctor and a slot,
+-- and no patient holds two active appointments that start at the same time.
+-- Seed data: 559 pairs and 23 patients (data problem 1). This is why there
+-- is no UNIQUE (doctor_id, slot_start); R24 is the report that lists them.
+SELECT 'IC7' AS ic,
+       (SELECT count(*) FROM appointments a
+        JOIN appointments b ON b.doctor_id = a.doctor_id AND b.slot_start = a.slot_start
+                           AND b.appointment_id > a.appointment_id
+        WHERE a.status <> 'CANCELLED' AND b.status <> 'CANCELLED') AS double_booked_pairs,
+       (SELECT count(DISTINCT a.patient_id) FROM appointments a
+        JOIN appointments b ON b.patient_id = a.patient_id AND b.slot_start = a.slot_start
+                           AND b.appointment_id > a.appointment_id
+        WHERE a.status <> 'CANCELLED' AND b.status <> 'CANCELLED') AS double_booked_patients;
+
+-- IC8: check-in happens after booking and before the consultation starts, and
+-- no consultation starts before its slot. Seed data: 16,183 / 5 / 0
+-- (data problem 3), which is why checked_in_at has no ordering CHECK.
+SELECT 'IC8' AS ic,
+       count(*) FILTER (WHERE checked_in_at > consult_started_at) AS checkin_after_consult_start,
+       count(*) FILTER (WHERE checked_in_at < booked_at)          AS checkin_before_booking,
+       count(*) FILTER (WHERE consult_started_at < slot_start)    AS started_before_slot
+FROM appointments;
+
+-- IC9: a doctor has a video_fee exactly when they have a video schedule
+-- block, and every doctor has a primary specialization. Seed data: 0 / 0.
+SELECT 'IC9' AS ic,
+       (SELECT count(*) FROM doctors d
+        WHERE (d.video_fee IS NOT NULL)
+              <> EXISTS (SELECT 1 FROM doctor_schedules s
+                         WHERE s.doctor_id = d.doctor_id AND s.clinic_id IS NULL)) AS video_fee_vs_video_schedule,
+       (SELECT count(*) FROM doctors d
+        WHERE NOT EXISTS (SELECT 1 FROM doctor_specializations ds
+                          WHERE ds.doctor_id = d.doctor_id AND ds.is_primary)) AS doctors_without_primary_spec;
+
+-- IC10: clinics with no schedule, counted correctly (NOT EXISTS) and the way
+-- R13 counts them (NOT IN over a column that contains NULLs). Seed data:
+-- 292 vs 0 (data problem 5). The two must agree once R13 is fixed.
+SELECT 'IC10' AS ic,
+       (SELECT count(*) FROM clinics c
+        WHERE NOT EXISTS (SELECT 1 FROM doctor_schedules s WHERE s.clinic_id = c.clinic_id)) AS not_exists_answer,
+       (SELECT count(*) FROM clinics c
+        WHERE c.clinic_id NOT IN (SELECT s.clinic_id FROM doctor_schedules s)) AS r13_not_in_answer;
+
+-- IC11: a doctor's schedule blocks on one weekday do not overlap (two blocks
+-- cannot start at the same time, the primary key forbids it, so an overlap
+-- means one starts inside the other), and nothing is booked before the
+-- patient signed up or before the doctor joined (IST date). Seed data:
+-- 0 / 1,072 / 0 (data problem 4).
+SELECT 'IC11' AS ic,
+       (SELECT count(*) FROM doctor_schedules s
+        JOIN doctor_schedules t ON t.doctor_id = s.doctor_id AND t.weekday = s.weekday
+                               AND t.start_time > s.start_time AND t.start_time < s.end_time) AS overlapping_blocks,
+       (SELECT count(*) FROM appointments a
+        JOIN patients p ON p.patient_id = a.patient_id
+        WHERE a.booked_at < p.created_at) AS booked_before_signup,
+       (SELECT count(*) FROM appointments a
+        JOIN doctors d ON d.doctor_id = a.doctor_id
+        WHERE (a.booked_at AT TIME ZONE 'Asia/Kolkata')::date < d.joined_on) AS booked_before_doctor_joined;
