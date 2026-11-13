@@ -46,6 +46,27 @@ Measured on the seed data (150,000 appointments) with the given `run_benchmark.s
 
 7 indexes, 2 summary tables and 12 rewritten queries; the other 18 queries are unchanged. Every result is proven unchanged, up to ties the original queries leave open, except R13, which was wrong. Details: [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and [`docs/04_optimization_report.md`](docs/04_optimization_report.md). The Phase 5 targets apply to the 20x dataset and are measured in CP4.
 
+## How to run our work
+
+PostgreSQL 15 or newer (we used 16.15), run from the repository root:
+
+```bash
+createdb practo
+psql -d practo -c "ALTER DATABASE practo SET timezone TO 'Asia/Kolkata'"
+unzip seed_data.zip
+psql -d practo -v ON_ERROR_STOP=1 -f sql/01_schema.sql       # Phase 2: 11 tables with their constraints
+psql -d practo -v ON_ERROR_STOP=1 -f sql/02_load_data.sql    # the 11 CSV files, then the row counts
+psql -d practo -f sql/03_integrity_checks.sql                # IC1-IC11
+./benchmarks/run_benchmark.sh practo baseline                 # Phase 3
+createdb -T practo practo_base                               # keep the Phase 3 state for the comparison
+psql -d practo_base -c "ALTER DATABASE practo_base SET timezone TO 'Asia/Kolkata'"   # not copied by -T
+psql -d practo -v ON_ERROR_STOP=1 -f sql/05_indexes.sql      # Phase 4: indexes and summary tables
+./benchmarks/run_benchmark.sh practo optimized 5 sql/06_optimized_queries.sql
+./benchmarks/compare_results.sh practo_base practo           # proof that the results are unchanged
+```
+
+Our measured passes were each preceded by a discarded warm-up pass, and the optimized one by `VACUUM (ANALYZE)`; the exact steps are in section 6 of [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and section 11 of [`docs/04_optimization_report.md`](docs/04_optimization_report.md).
+
 ---
 
 ## How this project works
