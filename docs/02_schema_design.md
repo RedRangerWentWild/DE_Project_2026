@@ -15,6 +15,7 @@ createdb practo
 unzip seed_data.zip
 psql -d practo -v ON_ERROR_STOP=1 -f sql/01_schema.sql
 psql -d practo -v ON_ERROR_STOP=1 -f sql/02_load_data.sql   # run from the repo root
+psql -d practo -f sql/03_integrity_checks.sql                # IC1-IC11, section 8
 ```
 
 ## 2. Type choices (the rules we applied)
@@ -308,7 +309,7 @@ Note that `appointments` has an index on `appointment_id` only. Its three foreig
 
 ## 8. Integrity checks
 
-Run after the load. "Violations" is the number of rows that break the rule.
+Run after the load. "Violations" is the number of rows that break the rule. All eleven queries are in [`sql/03_integrity_checks.sql`](../sql/03_integrity_checks.sql), each with the value it returns on the seed data.
 
 | # | Rule checked | Violations | Verdict |
 |---|--------------|-----------:|---------|
