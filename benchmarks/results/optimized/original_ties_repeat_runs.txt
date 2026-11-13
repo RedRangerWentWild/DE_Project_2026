@@ -1,0 +1,43 @@
+# The ORIGINAL R21 and R10 (queries/workload_30.sql), run 10 times each on practo_base
+# (the Phase 3 database: no sql/05_indexes.sql, data unchanged), a new psql connection per run.
+# set   = md5 of the rows sorted as text   (the 'set' column of compare_results.sh)
+# order = md5 of the rows in returned order
+# Compare: result_check.txt has R21 set_orig cc88d3936b88 and set_opt 46feba8d187e.
+
+## R21 plan on practo_base
+Limit
+  ->  Gather Merge
+        Workers Planned: 1
+        ->  Sort
+              Sort Key: slot_start DESC
+              ->  Parallel Seq Scan on appointments
+                    Filter: (((status)::text = 'COMPLETED'::text) AND ((payment_status)::text = 'PENDING'::text))
+
+## R21: 10 runs
+run  1  rows 100  set 15503d77495f  order 8e74423090dd  rows 99-100: 149048|2026-06-29 10:30:00+05:30 147691|2026-06-29 10:30:00+05:30
+run  2  rows 100  set 74c5ec678f03  order 19114bcd13b9  rows 99-100: 147891|2026-06-29 10:30:00+05:30 147691|2026-06-29 10:30:00+05:30
+run  3  rows 100  set 529bb9be4d0c  order e5fb556a532d  rows 99-100: 149073|2026-06-29 10:30:00+05:30 149048|2026-06-29 10:30:00+05:30
+run  4  rows 100  set 43775ae47d4e  order 7e25384c30eb  rows 99-100: 147891|2026-06-29 10:30:00+05:30 149073|2026-06-29 10:30:00+05:30
+run  5  rows 100  set 46feba8d187e  order b023d45e476d  rows 99-100: 149073|2026-06-29 10:30:00+05:30 149291|2026-06-29 10:30:00+05:30
+run  6  rows 100  set 529bb9be4d0c  order 93917def58bd  rows 99-100: 149048|2026-06-29 10:30:00+05:30 149073|2026-06-29 10:30:00+05:30
+run  7  rows 100  set e5b913f2b5cb  order 64ddd5c8dfff  rows 99-100: 149291|2026-06-29 10:30:00+05:30 149048|2026-06-29 10:30:00+05:30
+run  8  rows 100  set a93cdfa7b425  order 8ef72c258752  rows 99-100: 149291|2026-06-29 10:30:00+05:30 147891|2026-06-29 10:30:00+05:30
+run  9  rows 100  set 74c5ec678f03  order a4fd106a8f79  rows 99-100: 147891|2026-06-29 10:30:00+05:30 147691|2026-06-29 10:30:00+05:30
+run 10  rows 100  set 529bb9be4d0c  order dbb3028f8cc4  rows 99-100: 149073|2026-06-29 10:30:00+05:30 149048|2026-06-29 10:30:00+05:30
+
+## R21 optimized (sql/06_optimized_queries.sql) on practo, 3 runs
+run  1  rows 100  set 46feba8d187e  order 030e9fb098eb
+run  2  rows 100  set 46feba8d187e  order 030e9fb098eb
+run  3  rows 100  set 46feba8d187e  order 030e9fb098eb
+
+## R10: 10 runs (726 rows; ORDER BY p.issued_at DESC has ties)
+run  1  rows 726  set b34032c8d4f1  order b98128e2e0e0
+run  2  rows 726  set b34032c8d4f1  order 23734f9b43f3
+run  3  rows 726  set b34032c8d4f1  order 23734f9b43f3
+run  4  rows 726  set b34032c8d4f1  order e9ac4a59ee5b
+run  5  rows 726  set b34032c8d4f1  order 8d38e563f4d3
+run  6  rows 726  set b34032c8d4f1  order e9ac4a59ee5b
+run  7  rows 726  set b34032c8d4f1  order b98128e2e0e0
+run  8  rows 726  set b34032c8d4f1  order b98128e2e0e0
+run  9  rows 726  set b34032c8d4f1  order e9ac4a59ee5b
+run 10  rows 726  set b34032c8d4f1  order 8d38e563f4d3
