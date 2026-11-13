@@ -14,7 +14,7 @@ What we changed: **7 indexes and 2 summary tables** ([`sql/05_indexes.sql`](../s
 ## 1. How we measured
 
 - **Same machine, same server settings as Phase 3** (Intel Xeon 2.10 GHz, 4 vCPU, 16 GB, PostgreSQL 16.15, default configuration, `timezone = Asia/Kolkata`; see `docs/03_baseline_timings.md`). We changed no server setting: no `work_mem`, no `enable_*`, no `random_page_cost`, JIT left on.
-- **Same database.** `sql/05_indexes.sql` was run on the database used for Phase 3; nothing else changed. Before that, a copy was kept (`createdb -T practo practo_base`) so that before and after can be compared side by side.
+- **Same database.** `sql/05_indexes.sql` was run on the database used for Phase 3; nothing else changed. Before that, a copy was kept (`createdb -T practo practo_base`, then the same `timezone` setting, which the copy does not inherit) so that before and after can be compared side by side.
 - **Optimized run** ([`benchmarks/results/optimized/`](../benchmarks/results/optimized/)): `./benchmarks/run_benchmark.sh practo optimized 5 sql/06_optimized_queries.sql`, i.e. 5 runs per query as given in the brief. As in Phase 3, one warm-up pass was run first and discarded; then `VACUUM (ANALYZE)` (the warm-up's rolled-back writes leave dead row versions behind, which autovacuum would remove on a live server).
 - **Indexes-only run** ([`benchmarks/results/indexes_only/`](../benchmarks/results/indexes_only/)): the *original* `queries/workload_30.sql` on the indexed database (3 runs). It separates what the indexes did from what the rewrites did (section 6).
 - **Proof that results are unchanged**: [`benchmarks/compare_results.sh`](../benchmarks/compare_results.sh), output in [`optimized/result_check.txt`](../benchmarks/results/optimized/result_check.txt) (section 4).
@@ -349,6 +349,7 @@ Measured on a freshly built copy ([`index_sizes.txt`](../benchmarks/results/opti
 ```bash
 # Phase 3 state: schema + data, timezone Asia/Kolkata (docs/03_baseline_timings.md, section 6)
 createdb -T practo practo_base                         # keep a copy without the Phase 4 objects
+psql -d practo_base -c "ALTER DATABASE practo_base SET timezone TO 'Asia/Kolkata'"   # createdb -T does not copy it
 psql -d practo -v ON_ERROR_STOP=1 -f sql/05_indexes.sql
 ./benchmarks/run_benchmark.sh practo warmup 5 sql/06_optimized_queries.sql && rm -r benchmarks/results/warmup
 psql -d practo -c "VACUUM (ANALYZE)"
