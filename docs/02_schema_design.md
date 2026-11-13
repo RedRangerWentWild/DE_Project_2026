@@ -390,4 +390,4 @@ No row was rejected by the load. The problems below are in the data itself; in e
 
 ## 10. Environment note
 
-Tested on PostgreSQL 16.15 (Homebrew, macOS, Apple Silicon): schema, load and the 30-query workload all run without errors. Session time zone is `Asia/Kolkata`; queries that use `DATE(slot_start)` depend on it.
+Tested on PostgreSQL 16.15 (Homebrew, macOS, Apple Silicon): schema, load and the 30-query workload all run without errors. Rerun on 13 Nov 2026 from a fresh database: `sql/03_integrity_checks.sql` gives exactly the counts in section 8 (IC7 559 double-booked pairs, IC8 16,183 and 5, IC10 292 vs 0, IC11 1,072), so the data problems are a property of the seed data, not of one machine. Session time zone is `Asia/Kolkata`; queries that use `DATE(slot_start)` depend on it.
