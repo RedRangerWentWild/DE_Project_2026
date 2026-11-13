@@ -1,3 +1,6 @@
 seed_data/
 large_data/
 .DS_Store
+
+# Discarded warm-up pass of run_benchmark.sh (docs/03 section 6, docs/04 section 11)
+benchmarks/results/warmup/
