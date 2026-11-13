@@ -32,6 +32,13 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ORIG="${3:-$ROOT/queries/workload_30.sql}"
 OPT="${4:-$ROOT/sql/06_optimized_queries.sql}"
 die() { echo "compare_results.sh: $*" >&2; exit 2; }
+[[ -r "$ORIG" ]] || die "cannot read $ORIG"
+[[ -r "$OPT" ]] || die "cannot read $OPT"
+for db in "$BEFORE" "$AFTER"; do
+  state="$(psql -d "$db" -X -q -A -t -c "SELECT to_regclass('practo.appointments') IS NOT NULL" 2>&1)" \
+    || die "cannot connect to database '$db': $state"
+  [[ "$state" == t ]] || die "database '$db' has no practo schema: load sql/01_schema.sql and sql/02_load_data.sql first"
+done
 
 # ORDER BY columns of each query, as positions in its output (cut -f syntax)
 declare -A KEYS=(
@@ -41,6 +48,7 @@ declare -A KEYS=(
 )
 
 TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
 split() {  # same splitting rule as run_benchmark.sh
   awk -v dir="$2" '
     /^-- @/ { id = ""; if ($2 ~ /^@[RW][0-9]+$/) { id = substr($2, 2); file = dir "/" id ".sql"; printf "" > file }; next }
@@ -71,6 +79,7 @@ run_write() {  # db file -> "<rows changed> <md5 of changed rows>"
 printf '%-4s %-5s %9s %9s  %-12s %-12s %-12s %-12s  %s\n' query type rows_orig rows_opt set_orig set_opt keys_orig keys_opt verdict
 for f in $(ls "$TMP/orig"/*.sql | sort -V); do
   id="$(basename "$f" .sql)"
+  [[ -f "$TMP/opt/$id.sql" ]] || die "$id is in $ORIG but not in $OPT"
   if [[ "$id" == W* ]]; then
     # assigned first: a failure inside "read <<< $(...)" would go unnoticed,
     # and two failures would compare equal and be reported as IDENTICAL
@@ -100,4 +109,3 @@ for f in $(ls "$TMP/orig"/*.sql | sort -V); do
   fi
   printf '%-4s %-5s %9s %9s  %-12s %-12s %-12s %-12s  %s\n' "$id" "$type" "$n1" "$n2" "$s1" "$s2" "$k1" "$k2" "$v"
 done
-rm -rf "$TMP"
