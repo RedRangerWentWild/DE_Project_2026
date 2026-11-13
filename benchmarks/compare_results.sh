@@ -46,12 +46,18 @@ tz1="$(psql -d "$BEFORE" -X -q -A -t -c 'SHOW timezone')"
 tz2="$(psql -d "$AFTER" -X -q -A -t -c 'SHOW timezone')"
 [[ "$tz1" == "$tz2" ]] || die "$BEFORE runs in time zone $tz1 and $AFTER in $tz2; give both the same one, e.g. ALTER DATABASE $BEFORE SET timezone TO 'Asia/Kolkata'"
 
-# ORDER BY columns of each query, as positions in its output (cut -f syntax)
-declare -A KEYS=(
-  [R01]=3 [R02]=1,2 [R03]=1 [R04]=4 [R05]=3 [R06]= [R07]=3 [R08]=3 [R09]=3 [R10]=5
-  [R11]=4 [R12]=1,2 [R13]= [R14]=2,4 [R15]=1,3 [R16]=4 [R17]=1,2 [R18]=4 [R19]=3 [R20]=1
-  [R21]=5 [R22]=5 [R23]= [R24]=2 [R25]=3,1
-)
+# ORDER BY columns of each query, as positions in its output (cut -f syntax).
+# A case, not an associative array, so it also runs on macOS's bash 3.2.
+keys() {
+  case "$1" in
+    R01) echo 3 ;; R02) echo 1,2 ;; R03) echo 1 ;; R04) echo 4 ;; R05) echo 3 ;;
+    R07) echo 3 ;; R08) echo 3 ;; R09) echo 3 ;; R10) echo 5 ;; R11) echo 4 ;;
+    R12) echo 1,2 ;; R14) echo 2,4 ;; R15) echo 1,3 ;; R16) echo 4 ;; R17) echo 1,2 ;;
+    R18) echo 4 ;; R19) echo 3 ;; R20) echo 1 ;; R21) echo 5 ;; R22) echo 5 ;;
+    R24) echo 2 ;; R25) echo 3,1 ;;
+    *) echo "" ;;  # R06, R13, R23 have no ORDER BY
+  esac
+}
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -65,7 +71,8 @@ mkdir -p "$TMP/orig" "$TMP/opt"
 split "$ORIG" "$TMP/orig"
 split "$OPT" "$TMP/opt"
 
-md5() { md5sum | cut -c1-12; }
+# md5sum is GNU coreutils; macOS ships md5 -q instead
+if command -v md5sum >/dev/null; then md5() { md5sum | cut -c1-12; }; else md5() { command md5 -q | cut -c1-12; }; fi
 
 run_read() {  # db file -> rows on stdout, '|'-separated
   { echo "SET search_path TO practo;"; cat "$2"; } | psql -d "$1" -X -q -A -t -F '|' -v ON_ERROR_STOP=1
@@ -102,8 +109,9 @@ for f in $(ls "$TMP/orig"/*.sql | sort -V); do
     n1=$(wc -l < "$TMP/$id.orig"); n2=$(wc -l < "$TMP/$id.opt")
     s1=$(sort "$TMP/$id.orig" | md5); s2=$(sort "$TMP/$id.opt" | md5)
     o1=$(md5 < "$TMP/$id.orig"); o2=$(md5 < "$TMP/$id.opt")
-    if [[ -n "${KEYS[$id]}" ]]; then
-      k1=$(cut -d'|' -f"${KEYS[$id]}" "$TMP/$id.orig" | md5); k2=$(cut -d'|' -f"${KEYS[$id]}" "$TMP/$id.opt" | md5)
+    kc="$(keys "$id")"
+    if [[ -n "$kc" ]]; then
+      k1=$(cut -d'|' -f"$kc" "$TMP/$id.orig" | md5); k2=$(cut -d'|' -f"$kc" "$TMP/$id.opt" | md5)
     else
       k1=-; k2=-
     fi
