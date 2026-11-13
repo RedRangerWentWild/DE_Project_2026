@@ -31,6 +31,23 @@
 
 ---
 
+## Our results (team T0015)
+
+Measured on the seed data (150,000 appointments) with the given `run_benchmark.sh`; every number comes from the files in `benchmarks/results/`.
+
+| | Phase 3 baseline | Phase 4 optimized |
+|---|---:|---:|
+| Total of the 30 average times | 6,747.052 ms | **290.812 ms** (95.7% less, 23x faster) |
+| Slowest real-time screen (R02-R07, R23, W01-W03) | R03, 18.217 ms | W01, 1.863 ms |
+| Slowest interactive query (R01, R11, R13, R18, R21, R22, W05) | R22, 86.719 ms | R18, 5.877 ms |
+| Slowest report (R08-R10, R12, R14-R17, R19, R20, R24, R25) | R19, 5,940.062 ms | R24, 62.321 ms |
+| Nightly batch (W04) | 26.508 ms | 6.592 ms |
+| Queries with a wrong answer | R13 (returns 0 rows) | none (R13 returns the 292 clinics) |
+
+7 indexes, 2 summary tables and 12 rewritten queries; the other 18 queries are unchanged. Every result is proven unchanged, up to ties the original queries leave open, except R13, which was wrong. Details: [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and [`docs/04_optimization_report.md`](docs/04_optimization_report.md). The Phase 5 targets apply to the 20x dataset and are measured in CP4.
+
+---
+
 ## How this project works
 
 | Phase | What you do | You submit | Counts toward | Marks |
