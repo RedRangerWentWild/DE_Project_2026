@@ -179,7 +179,35 @@ CREATE UNIQUE INDEX ux_monthly_medicine
     ON monthly_medicine_by_specialization (month, spec_name, medicine_name);
 
 -- ---------------------------------------------------------------------
--- 10. VACUUM + ANALYZE
+-- 10. The purpose of each object, stored in the catalog
+--    The same reasoning as the comments above, in one line each, so that \di+
+--    and \dm+ in psql show why every object exists.
+-- ---------------------------------------------------------------------
+COMMENT ON INDEX ix_appt_doctor_slot IS
+    'R03, R05, R19, W05: one doctor''s appointments in time order. INCLUDE (status, consult_ended_at) makes R19''s 960 lookups index-only.';
+COMMENT ON INDEX ix_appt_patient IS
+    'R04, R11: one patient''s appointments per doctor in time order; R11''s NOT EXISTS probe is two equalities and a range.';
+COMMENT ON INDEX ix_appt_slot_cover IS
+    'R08, R09, R12, R16, R17, R20, R21, R22, R25, W02: all appointments in (slot_start, appointment_id) order, covering the yearly reports.';
+COMMENT ON INDEX ix_appt_open_slot_end IS
+    'W04: partial, only the BOOKED / CHECKED_IN rows (1.2% of the seed data), keyed on slot_end.';
+COMMENT ON INDEX ix_presc_followup IS
+    'R11: partial, only the 30% of prescriptions that have a follow-up date.';
+COMMENT ON INDEX ix_patients_allergies IS
+    'R10: GIN on the allergies array, for allergies @> ARRAY[...].';
+COMMENT ON INDEX ix_sched_clinic IS
+    'R13 (NOT EXISTS by clinic) and the city checks of R01, R18, R19; also the foreign-key index for deletes on clinics.';
+COMMENT ON MATERIALIZED VIEW doctor_rating_summary IS
+    'R14: review count, exact average rating and recommendations per doctor. Refreshed nightly with REFRESH MATERIALIZED VIEW CONCURRENTLY.';
+COMMENT ON INDEX ux_rating_summary_doctor IS
+    'Unique key that REFRESH MATERIALIZED VIEW CONCURRENTLY needs.';
+COMMENT ON MATERIALIZED VIEW monthly_medicine_by_specialization IS
+    'R15: prescriptions per month (IST), primary specialization and medicine. Refreshed nightly with REFRESH MATERIALIZED VIEW CONCURRENTLY.';
+COMMENT ON INDEX ux_monthly_medicine IS
+    'Unique key that REFRESH MATERIALIZED VIEW CONCURRENTLY needs; R15 also uses it to find one month.';
+
+-- ---------------------------------------------------------------------
+-- 11. VACUUM + ANALYZE
 --    ANALYZE gives the planner statistics for the new objects. VACUUM sets the
 --    visibility map: an Index Only Scan can skip the table only for pages
 --    marked all-visible, so without it the "covering" indexes above would
