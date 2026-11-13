@@ -65,6 +65,8 @@ psql -d practo -v ON_ERROR_STOP=1 -f sql/05_indexes.sql      # Phase 4: indexes 
 ./benchmarks/compare_results.sh practo_base practo           # proof that the results are unchanged
 ```
 
+On macOS with Homebrew, put PostgreSQL's tools on the path first (`export PATH=/opt/homebrew/opt/postgresql@16/bin:$PATH`) and set `PGPORT` if this server is not on 5432; both scripts read the usual `PG*` variables and run on the stock bash 3.2.
+
 Our measured passes were each preceded by a discarded warm-up pass, and the optimized one by `VACUUM (ANALYZE)`; the exact steps are in section 6 of [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and section 11 of [`docs/04_optimization_report.md`](docs/04_optimization_report.md).
 
 ---
