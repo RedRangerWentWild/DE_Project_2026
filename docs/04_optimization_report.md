@@ -356,3 +356,5 @@ psql -d practo -c "VACUUM (ANALYZE)"
 ./benchmarks/run_benchmark.sh practo optimized 5 sql/06_optimized_queries.sql
 ./benchmarks/compare_results.sh practo_base practo      # proof of identical results
 ```
+
+**Checked on a second machine.** On a MacBook Pro (Apple M4, macOS, Homebrew PostgreSQL 16.15) we rebuilt the database from `sql/01_schema.sql` and `sql/02_load_data.sql`, applied `sql/05_indexes.sql`, and ran `compare_results.sh` against an untouched Phase 3 copy. Every SQL file ran without errors and the verdicts match section 4, with one difference: R21 came out SAME instead of TIES, i.e. this time the original query happened to pick the same row at the `LIMIT` edge. That is the tie behaviour described in section 4, not a change in results.
