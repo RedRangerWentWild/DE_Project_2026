@@ -31,6 +31,7 @@ AFTER="${2:?after_db required}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ORIG="${3:-$ROOT/queries/workload_30.sql}"
 OPT="${4:-$ROOT/sql/06_optimized_queries.sql}"
+die() { echo "compare_results.sh: $*" >&2; exit 2; }
 
 # ORDER BY columns of each query, as positions in its output (cut -f syntax)
 declare -A KEYS=(
@@ -71,14 +72,18 @@ printf '%-4s %-5s %9s %9s  %-12s %-12s %-12s %-12s  %s\n' query type rows_orig r
 for f in $(ls "$TMP/orig"/*.sql | sort -V); do
   id="$(basename "$f" .sql)"
   if [[ "$id" == W* ]]; then
-    read -r n1 s1 <<< "$(run_write "$BEFORE" "$f")"
-    read -r n2 s2 <<< "$(run_write "$AFTER" "$TMP/opt/$id.sql")"
+    # assigned first: a failure inside "read <<< $(...)" would go unnoticed,
+    # and two failures would compare equal and be reported as IDENTICAL
+    r1="$(run_write "$BEFORE" "$f")" || die "$id failed on $BEFORE"
+    r2="$(run_write "$AFTER" "$TMP/opt/$id.sql")" || die "$id failed on $AFTER"
+    read -r n1 s1 <<< "$r1"
+    read -r n2 s2 <<< "$r2"
     k1=-; k2=-
     if [[ "$n1" == "$n2" && "$s1" == "$s2" ]]; then v=IDENTICAL; else v=DIFFERENT; fi
     type=WRITE
   else
-    run_read "$BEFORE" "$f" > "$TMP/$id.orig"
-    run_read "$AFTER" "$TMP/opt/$id.sql" > "$TMP/$id.opt"
+    run_read "$BEFORE" "$f" > "$TMP/$id.orig" || die "$id failed on $BEFORE"
+    run_read "$AFTER" "$TMP/opt/$id.sql" > "$TMP/$id.opt" || die "$id failed on $AFTER"
     n1=$(wc -l < "$TMP/$id.orig"); n2=$(wc -l < "$TMP/$id.opt")
     s1=$(sort "$TMP/$id.orig" | md5); s2=$(sort "$TMP/$id.opt" | md5)
     o1=$(md5 < "$TMP/$id.orig"); o2=$(md5 < "$TMP/$id.opt")
