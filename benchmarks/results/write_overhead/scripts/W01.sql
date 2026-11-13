@@ -1,0 +1,3 @@
+BEGIN;
+INSERT INTO appointments (appointment_id, patient_id, doctor_id, clinic_id, consult_type, booked_at, slot_start, slot_end,                           reason, status, fee, payment_status) SELECT 90000001, 90, 217, sc.clinic_id, 'IN_CLINIC', '2026-07-01 09:00:00+05:30',        '2026-07-03 10:30:00+05:30', TIMESTAMPTZ '2026-07-03 10:30:00+05:30' + sc.slot_minutes * interval '1 minute',        'Skin rash', 'BOOKED', d.consultation_fee, 'PENDING' FROM doctor_schedules sc JOIN doctors d ON d.doctor_id = sc.doctor_id WHERE sc.doctor_id = 217 AND sc.weekday = 5 AND sc.start_time = '10:00';  
+ROLLBACK;

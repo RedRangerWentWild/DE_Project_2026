@@ -1,6 +1,6 @@
 # W02 on practo (with sql/05_indexes.sql), 500 transactions, one connection; the statement runs inside BEGIN ... ROLLBACK
 pgbench (16.15 (Ubuntu 16.15-0ubuntu0.24.04.1))
-transaction type: /tmp/claude-0/-home-user/dc4f4dee-c1da-5209-a13b-9c34ae1ba663/scratchpad/de/pgb/W02.sql
+transaction type: benchmarks/results/write_overhead/scripts/W02.sql
 scaling factor: 1
 query mode: simple
 number of clients: 1
