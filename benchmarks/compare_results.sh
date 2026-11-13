@@ -39,6 +39,12 @@ for db in "$BEFORE" "$AFTER"; do
     || die "cannot connect to database '$db': $state"
   [[ "$state" == t ]] || die "database '$db' has no practo schema: load sql/01_schema.sql and sql/02_load_data.sql first"
 done
+# Dates in the queries (DATE(slot_start), date literals) and every printed
+# timestamp depend on the session time zone, so both sides must use the same.
+# createdb -T copies the data but not ALTER DATABASE ... SET timezone.
+tz1="$(psql -d "$BEFORE" -X -q -A -t -c 'SHOW timezone')"
+tz2="$(psql -d "$AFTER" -X -q -A -t -c 'SHOW timezone')"
+[[ "$tz1" == "$tz2" ]] || die "$BEFORE runs in time zone $tz1 and $AFTER in $tz2; give both the same one, e.g. ALTER DATABASE $BEFORE SET timezone TO 'Asia/Kolkata'"
 
 # ORDER BY columns of each query, as positions in its output (cut -f syntax)
 declare -A KEYS=(
