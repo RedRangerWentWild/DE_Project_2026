@@ -38,9 +38,10 @@ As the application grows from **150,000 appointments** (seed) to **3,000,000** (
 
 ### 4.1 Declarative Table Partitioning
 - **Target Table:** `appointments` (the primary fact table and hotspot).
-- **Partition Scheme:** Range partitioning by `slot_start` on a **Quarterly** basis (`sql/08_partitioning.sql`).
+- **Partition Scheme:** Range partitioning by `slot_start` on a **Quarterly** basis, 2025 Q1 to 2026 Q4, plus a `DEFAULT` partition for anything outside that range (`sql/08_partitioning.sql`).
 - **Mechanism (Partition Pruning):**
-  Queries with temporal filters (e.g. `WHERE slot_start >= '2026-06-01' AND slot_start < '2026-07-01'`) automatically prune 3 of the 4 quarterly partitions during query planning.
+  Queries with temporal filters (e.g. `WHERE slot_start >= '2026-06-01' AND slot_start < '2026-07-01'`) are planned against one quarterly partition only; the other seven and the default are pruned during query planning.
+- **Seed data per partition:** 22,969 / 24,923 / 25,290 / 25,317 appointments in the four 2025 quarters, 24,665 / 25,013 / 1,823 in 2026 Q1-Q3, and none in the default partition.
 - **PostgreSQL Requirement:**
   The partition key (`slot_start`) must be part of the table's Primary Key:
   ```sql
