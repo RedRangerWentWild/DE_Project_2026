@@ -12,9 +12,19 @@
 | `seed_data.zip` | 11 CSV files (150,000 appointments): the only input for Phase 2. Unzip it to get `seed_data/` |
 | `queries/workload_30.sql` | The 30 queries for Phase 3 (do not edit) |
 | `benchmarks/run_benchmark.sh` | Timing script: 3 runs per query, average, raw plans saved |
+| `benchmarks/compare_results.sh` | Proves the optimized queries return the same rows as the originals |
+| `benchmarks/check_rewrites.py` | Checks the rewritten queries for parameter values other than the ones in the workload |
+| `benchmarks/check_reports.py` | Checks every number in the reports against the raw result files |
+| `benchmarks/results/` | Raw plans and `summary.csv` of every measured pass ([README](benchmarks/results/README.md)) |
 | `CHECKPOINTS.md` | Checkpoint dates and the files each one needs (DE and AP repos) |
+| `team.json` | Team number, members and the machine used for benchmarks |
+| `sql/01_schema.sql`, `sql/02_load_data.sql` | Phase 2 schema with its constraints, and the load of the 11 CSV files |
+| `sql/03_integrity_checks.sql` | Phase 2 integrity checks IC1-IC11 |
+| `sql/05_indexes.sql`, `sql/06_optimized_queries.sql` | Phase 4 indexes, summary tables and rewritten queries |
 | `sql/08_partitioning.sql` | Phase 5 declarative range partitioning for `appointments` |
+| `docs/01_problem_understanding.md` ... `docs/04_optimization_report.md` | Phase 1-4 reports |
 | `docs/05_scalability_report.md` | Phase 5 scalability and 100x architectural scaling blueprint |
+| `diagrams/er_diagram.png`, `diagrams/er_diagram.mmd` | ER diagram and its Mermaid source |
 
 **Getting started:** **clone this repository and push it into your team's DE repo** (the DE repo you submitted in the form); the steps are in [`CHECKPOINTS.md`](CHECKPOINTS.md). Keep the structure shown in [Repository structure](#repository-structure-submit-exactly-this). Unzip `seed_data.zip` inside your project folder, but don't commit the CSV files. Deadlines are in [`CHECKPOINTS.md`](CHECKPOINTS.md). Then begin with Phase 1.
 
