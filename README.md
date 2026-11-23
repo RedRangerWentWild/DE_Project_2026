@@ -818,3 +818,7 @@ SET status = 'CANCELLED', payment_status = 'REFUNDED'
 WHERE doctor_id = 504 AND status = 'BOOKED'
   AND slot_start >= '2026-07-03' AND slot_start < '2026-07-04';
 ```
+## Requirements
+
+- PostgreSQL 15 or newer (we measured on 16.15)
+- bash, `unzip` and Python 3 for the benchmark and checking scripts
