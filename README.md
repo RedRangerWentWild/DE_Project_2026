@@ -841,3 +841,7 @@ R13 lists clinics with no doctor schedule using `NOT IN (SELECT clinic_id FROM d
 ## Storage cost of the optimizations
 
 The 7 indexes take 24.3 MB and the 2 summary tables 0.8 MB, 25.1 MB in total; the `appointments` table itself is 21 MB. Source: `benchmarks/results/optimized/index_sizes.txt`.
+
+## Benchmark run time
+
+A full baseline pass takes about half a minute: R19 alone runs about 6 seconds each time, 3 times. The optimized pass finishes in a few seconds.
