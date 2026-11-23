@@ -823,7 +823,12 @@ WHERE doctor_id = 504 AND status = 'BOOKED'
 - PostgreSQL 15 or newer (we measured on 16.15)
 - bash, `unzip` and Python 3 for the benchmark and checking scripts
 
-## Requirements
+## Biggest speed-ups
 
-- PostgreSQL 15 or newer (we measured on 16.15)
-- bash, `unzip` and Python 3 for the benchmark and checking scripts
+| Query | Before (ms) | After (ms) | Faster by |
+|-------|------------:|-----------:|----------:|
+| R22: support console, page 4,001 | 86.719 | 0.065 | 1,334x |
+| R19: Bengaluru city report | 5,940.062 | 13.932 | 426x |
+| R03: slot picker | 18.217 | 0.173 | 105x |
+
+Numbers from `benchmarks/results/baseline/summary.csv` and `benchmarks/results/optimized/summary.csv`.
