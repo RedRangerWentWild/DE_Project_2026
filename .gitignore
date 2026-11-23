@@ -4,3 +4,9 @@ large_data/
 
 # Discarded warm-up pass of run_benchmark.sh (docs/03 section 6, docs/04 section 11)
 benchmarks/results/warmup/
+
+# Python bytecode from the benchmark checking scripts, and editor folders
+__pycache__/
+*.pyc
+.vscode/
+.idea/
