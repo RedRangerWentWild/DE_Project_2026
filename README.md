@@ -822,3 +822,8 @@ WHERE doctor_id = 504 AND status = 'BOOKED'
 
 - PostgreSQL 15 or newer (we measured on 16.15)
 - bash, `unzip` and Python 3 for the benchmark and checking scripts
+
+## Requirements
+
+- PostgreSQL 15 or newer (we measured on 16.15)
+- bash, `unzip` and Python 3 for the benchmark and checking scripts
