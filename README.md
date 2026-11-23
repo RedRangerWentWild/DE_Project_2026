@@ -837,3 +837,7 @@ Numbers from `benchmarks/results/baseline/summary.csv` and `benchmarks/results/o
 ## The wrong answer we found (R13)
 
 R13 lists clinics with no doctor schedule using `NOT IN (SELECT clinic_id FROM doctor_schedules)`. Video schedules have a NULL `clinic_id`, and `x NOT IN (..., NULL)` is never true, so the query returned 0 rows. Rewritten with `NOT EXISTS`, it returns the correct 292 clinics. Details: `docs/04_optimization_report.md`, section 3.
+
+## Storage cost of the optimizations
+
+The 7 indexes take 24.3 MB and the 2 summary tables 0.8 MB, 25.1 MB in total; the `appointments` table itself is 21 MB. Source: `benchmarks/results/optimized/index_sizes.txt`.
