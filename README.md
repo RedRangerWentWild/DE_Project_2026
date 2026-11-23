@@ -832,3 +832,8 @@ WHERE doctor_id = 504 AND status = 'BOOKED'
 | R03: slot picker | 18.217 | 0.173 | 105x |
 
 Numbers from `benchmarks/results/baseline/summary.csv` and `benchmarks/results/optimized/summary.csv`.
+
+
+## The wrong answer we found (R13)
+
+R13 lists clinics with no doctor schedule using `NOT IN (SELECT clinic_id FROM doctor_schedules)`. Video schedules have a NULL `clinic_id`, and `x NOT IN (..., NULL)` is never true, so the query returned 0 rows. Rewritten with `NOT EXISTS`, it returns the correct 292 clinics. Details: `docs/04_optimization_report.md`, section 3.
