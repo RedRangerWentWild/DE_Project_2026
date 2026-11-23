@@ -52,8 +52,23 @@ CREATE TABLE IF NOT EXISTS appointments_partitioned (
 ) PARTITION BY RANGE (slot_start);
 
 -- ---------------------------------------------------------------------
--- 2. Declarative Partitions for Calendar Year 2026 (Quarterly)
+-- 2. Declarative Partitions, one per quarter (2025 and 2026)
 -- ---------------------------------------------------------------------
+-- The seed data runs from 1 Jan 2025 to 30 Jun 2026. Without the 2025
+-- quarters, two thirds of the appointments would land in the DEFAULT
+-- partition, which a date range can never prune.
+CREATE TABLE IF NOT EXISTS appointments_2025_q1 PARTITION OF appointments_partitioned
+    FOR VALUES FROM ('2025-01-01 00:00:00+05:30') TO ('2025-04-01 00:00:00+05:30');
+
+CREATE TABLE IF NOT EXISTS appointments_2025_q2 PARTITION OF appointments_partitioned
+    FOR VALUES FROM ('2025-04-01 00:00:00+05:30') TO ('2025-07-01 00:00:00+05:30');
+
+CREATE TABLE IF NOT EXISTS appointments_2025_q3 PARTITION OF appointments_partitioned
+    FOR VALUES FROM ('2025-07-01 00:00:00+05:30') TO ('2025-10-01 00:00:00+05:30');
+
+CREATE TABLE IF NOT EXISTS appointments_2025_q4 PARTITION OF appointments_partitioned
+    FOR VALUES FROM ('2025-10-01 00:00:00+05:30') TO ('2026-01-01 00:00:00+05:30');
+
 -- Q1 2026: Jan 1 to Apr 1
 CREATE TABLE IF NOT EXISTS appointments_2026_q1 PARTITION OF appointments_partitioned
     FOR VALUES FROM ('2026-01-01 00:00:00+05:30') TO ('2026-04-01 00:00:00+05:30');
@@ -70,7 +85,7 @@ CREATE TABLE IF NOT EXISTS appointments_2026_q3 PARTITION OF appointments_partit
 CREATE TABLE IF NOT EXISTS appointments_2026_q4 PARTITION OF appointments_partitioned
     FOR VALUES FROM ('2026-10-01 00:00:00+05:30') TO ('2027-01-01 00:00:00+05:30');
 
--- Default partition for historical or unexpected future data
+-- Default partition for data before 2025 or after 2026
 CREATE TABLE IF NOT EXISTS appointments_default PARTITION OF appointments_partitioned DEFAULT;
 
 -- ---------------------------------------------------------------------
