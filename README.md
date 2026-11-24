@@ -56,7 +56,7 @@ Measured on the seed data (150,000 appointments) with the given `run_benchmark.s
 | Nightly batch (W04) | 26.508 ms | 6.592 ms |
 | Queries with a wrong answer | R13 (returns 0 rows) | none (R13 returns the 292 clinics) |
 
-7 indexes, 2 summary tables and 12 rewritten queries; the other 18 queries are unchanged. Every result is proven unchanged, up to ties the original queries leave open, except R13, which was wrong. Details: [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and [`docs/04_optimization_report.md`](docs/04_optimization_report.md). The Phase 5 targets apply to the 20x dataset and are measured in CP4.
+7 indexes, 2 summary tables and 12 rewritten queries; the other 18 queries are unchanged. Every result is proven unchanged, up to ties the original queries leave open, except R13, which was wrong. Details: [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and [`docs/04_optimization_report.md`](docs/04_optimization_report.md). **Phase 5, on the faculty's large dataset (3,000,000 appointments):** all 30 optimized queries meet their targets with no change to any index or query; the slowest, R24, takes 2,557.139 ms of its 5,000 ms. Details: [`docs/05_scalability_report.md`](docs/05_scalability_report.md), section 2.
 
 ## How to run our work
 
@@ -79,11 +79,22 @@ python3 benchmarks/check_rewrites.py                         # the rewrites for 
 python3 benchmarks/check_reports.py                          # every number in the reports against the raw files
 psql -d practo -v ON_ERROR_STOP=1 -f sql/08_partitioning.sql # Phase 5: partitioned copy of appointments (empty)
 psql -d practo -c "INSERT INTO practo.appointments_partitioned SELECT * FROM practo.appointments"   # fill it to see pruning
+# Phase 5: large_data.zip (the faculty's release "large-data") in a new database; only the optimized queries run on it
+createdb practo_large
+psql -d practo_large -c "ALTER DATABASE practo_large SET timezone TO 'Asia/Kolkata'"
+unzip large_data.zip
+psql -d practo_large -v ON_ERROR_STOP=1 -f sql/01_schema.sql
+sed 's#seed_data/#large_data/#g' sql/02_load_data.sql | psql -d practo_large -v ON_ERROR_STOP=1 -f -   # only the folder name changes
+psql -d practo_large -v ON_ERROR_STOP=1 -f sql/05_indexes.sql
+psql -d practo_large -c "ANALYZE"
+./benchmarks/run_benchmark.sh practo_large warmup 3 benchmarks/results/large/workload_large.sql && rm -r benchmarks/results/warmup
+psql -d practo_large -c "VACUUM (ANALYZE)"
+./benchmarks/run_benchmark.sh practo_large large 3 benchmarks/results/large/workload_large.sql
 ```
 
 On macOS with Homebrew, put PostgreSQL's tools on the path first (`export PATH=/opt/homebrew/opt/postgresql@16/bin:$PATH`) and set `PGPORT` if this server is not on 5432; both scripts read the usual `PG*` variables and run on the stock bash 3.2.
 
-Our measured passes were each preceded by a discarded warm-up pass, and the optimized one by `VACUUM (ANALYZE)`; the exact steps are in section 6 of [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md) and section 11 of [`docs/04_optimization_report.md`](docs/04_optimization_report.md).
+Our measured passes were each preceded by a discarded warm-up pass, and the optimized one by `VACUUM (ANALYZE)`; the exact steps are in section 6 of [`docs/03_baseline_timings.md`](docs/03_baseline_timings.md), section 11 of [`docs/04_optimization_report.md`](docs/04_optimization_report.md) and section 2.1 of [`docs/05_scalability_report.md`](docs/05_scalability_report.md).
 
 ---
 
@@ -844,4 +855,4 @@ The 7 indexes take 24.3 MB and the 2 summary tables 0.8 MB, 25.1 MB in total; th
 
 ## Benchmark run time
 
-A full baseline pass takes about half a minute: R19 alone runs about 6 seconds each time, 3 times. The optimized pass finishes in a few seconds.
+A full baseline pass takes about half a minute: R19 alone runs about 6 seconds each time, 3 times. The optimized pass finishes in a few seconds. On the large data, loading and indexing take about 2 minutes, and the Phase 5 pass about 20 seconds, a third of it R24 (about 2.5 seconds each time).
