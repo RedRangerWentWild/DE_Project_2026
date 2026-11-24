@@ -1,0 +1,48 @@
+=== R07 run 1 ===
+Sort  (cost=22.26..22.27 rows=3 width=56) (actual time=0.037..0.038 rows=0 loops=1)
+  Sort Key: i.line_no
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=3 read=3
+  ->  Nested Loop  (cost=0.86..22.24 rows=3 width=56) (actual time=0.019..0.020 rows=0 loops=1)
+        Buffers: shared read=3
+        ->  Index Scan using uq_prescriptions_appointment on prescriptions p  (cost=0.43..8.45 rows=1 width=22) (actual time=0.019..0.019 rows=0 loops=1)
+              Index Cond: (appointment_id = 18872)
+              Buffers: shared read=3
+        ->  Index Scan using pk_prescription_items on prescription_items i  (cost=0.43..13.75 rows=4 width=42) (never executed)
+              Index Cond: (prescription_id = p.prescription_id)
+Planning:
+  Buffers: shared hit=247 read=10
+Planning Time: 0.642 ms
+Execution Time: 0.083 ms
+=== R07 run 2 ===
+Sort  (cost=22.26..22.27 rows=3 width=56) (actual time=0.025..0.025 rows=0 loops=1)
+  Sort Key: i.line_no
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=6
+  ->  Nested Loop  (cost=0.86..22.24 rows=3 width=56) (actual time=0.008..0.008 rows=0 loops=1)
+        Buffers: shared hit=3
+        ->  Index Scan using uq_prescriptions_appointment on prescriptions p  (cost=0.43..8.45 rows=1 width=22) (actual time=0.008..0.008 rows=0 loops=1)
+              Index Cond: (appointment_id = 18872)
+              Buffers: shared hit=3
+        ->  Index Scan using pk_prescription_items on prescription_items i  (cost=0.43..13.75 rows=4 width=42) (never executed)
+              Index Cond: (prescription_id = p.prescription_id)
+Planning:
+  Buffers: shared hit=257
+Planning Time: 0.457 ms
+Execution Time: 0.061 ms
+=== R07 run 3 ===
+Sort  (cost=22.26..22.27 rows=3 width=56) (actual time=0.025..0.025 rows=0 loops=1)
+  Sort Key: i.line_no
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=6
+  ->  Nested Loop  (cost=0.86..22.24 rows=3 width=56) (actual time=0.007..0.008 rows=0 loops=1)
+        Buffers: shared hit=3
+        ->  Index Scan using uq_prescriptions_appointment on prescriptions p  (cost=0.43..8.45 rows=1 width=22) (actual time=0.007..0.007 rows=0 loops=1)
+              Index Cond: (appointment_id = 18872)
+              Buffers: shared hit=3
+        ->  Index Scan using pk_prescription_items on prescription_items i  (cost=0.43..13.75 rows=4 width=42) (never executed)
+              Index Cond: (prescription_id = p.prescription_id)
+Planning:
+  Buffers: shared hit=257
+Planning Time: 0.461 ms
+Execution Time: 0.060 ms

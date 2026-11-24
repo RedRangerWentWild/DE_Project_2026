@@ -1,0 +1,24 @@
+=== R23 run 1 ===
+Index Scan using uq_doctors_registration_no on doctors  (cost=0.41..8.43 rows=1 width=25) (actual time=0.031..0.031 rows=1 loops=1)
+  Index Cond: ((registration_no)::text = 'TSMC-011519'::text)
+  Buffers: shared hit=1 read=3
+Planning:
+  Buffers: shared hit=92 read=1
+Planning Time: 0.235 ms
+Execution Time: 0.051 ms
+=== R23 run 2 ===
+Index Scan using uq_doctors_registration_no on doctors  (cost=0.41..8.43 rows=1 width=25) (actual time=0.022..0.022 rows=1 loops=1)
+  Index Cond: ((registration_no)::text = 'TSMC-011519'::text)
+  Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=93
+Planning Time: 0.219 ms
+Execution Time: 0.041 ms
+=== R23 run 3 ===
+Index Scan using uq_doctors_registration_no on doctors  (cost=0.41..8.43 rows=1 width=25) (actual time=0.019..0.020 rows=1 loops=1)
+  Index Cond: ((registration_no)::text = 'TSMC-011519'::text)
+  Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=93
+Planning Time: 0.208 ms
+Execution Time: 0.039 ms

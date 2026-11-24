@@ -1,0 +1,36 @@
+=== R02 run 1 ===
+Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.42..117.47 rows=11 width=52) (actual time=0.051..0.062 rows=9 loops=1)
+  Index Cond: (doctor_id = 217)
+  Buffers: shared hit=20 read=3
+  SubPlan 1
+    ->  Index Scan using clinics_pkey on clinics c  (cost=0.29..8.30 rows=1 width=27) (actual time=0.002..0.002 rows=1 loops=9)
+          Index Cond: (clinic_id = sc.clinic_id)
+          Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=167
+Planning Time: 0.376 ms
+Execution Time: 0.094 ms
+=== R02 run 2 ===
+Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.42..117.47 rows=11 width=52) (actual time=0.028..0.036 rows=9 loops=1)
+  Index Cond: (doctor_id = 217)
+  Buffers: shared hit=23
+  SubPlan 1
+    ->  Index Scan using clinics_pkey on clinics c  (cost=0.29..8.30 rows=1 width=27) (actual time=0.001..0.002 rows=1 loops=9)
+          Index Cond: (clinic_id = sc.clinic_id)
+          Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=167
+Planning Time: 0.308 ms
+Execution Time: 0.062 ms
+=== R02 run 3 ===
+Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.42..117.47 rows=11 width=52) (actual time=0.029..0.037 rows=9 loops=1)
+  Index Cond: (doctor_id = 217)
+  Buffers: shared hit=23
+  SubPlan 1
+    ->  Index Scan using clinics_pkey on clinics c  (cost=0.29..8.30 rows=1 width=27) (actual time=0.001..0.002 rows=1 loops=9)
+          Index Cond: (clinic_id = sc.clinic_id)
+          Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=167
+Planning Time: 0.322 ms
+Execution Time: 0.064 ms

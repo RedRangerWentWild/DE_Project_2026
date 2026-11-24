@@ -1,0 +1,63 @@
+=== R20 run 1 ===
+WindowAgg  (cost=10742.60..11032.28 rows=16553 width=44) (actual time=36.118..36.129 rows=26 loops=1)
+  Buffers: shared hit=387 read=821
+  ->  Sort  (cost=10742.60..10783.98 rows=16553 width=12) (actual time=36.104..36.106 rows=26 loops=1)
+        Sort Key: ((appointments.slot_start)::date)
+        Sort Method: quicksort  Memory: 26kB
+        Buffers: shared hit=387 read=821
+        ->  HashAggregate  (cost=9375.75..9582.67 rows=16553 width=12) (actual time=36.004..36.074 rows=26 loops=1)
+              Group Key: (appointments.slot_start)::date
+              Batches: 1  Memory Usage: 793kB
+              Buffers: shared hit=384 read=821
+              ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.43..8716.23 rows=131904 width=4) (actual time=0.033..25.065 rows=137597 loops=1)
+                    Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Filter: ((status)::text = 'COMPLETED'::text)
+                    Rows Removed by Filter: 30355
+                    Heap Fetches: 0
+                    Buffers: shared hit=384 read=821
+Planning:
+  Buffers: shared hit=215 read=1
+Planning Time: 0.472 ms
+Execution Time: 36.643 ms
+=== R20 run 2 ===
+WindowAgg  (cost=10742.60..11032.28 rows=16553 width=44) (actual time=33.809..33.820 rows=26 loops=1)
+  Buffers: shared hit=1208
+  ->  Sort  (cost=10742.60..10783.98 rows=16553 width=12) (actual time=33.795..33.797 rows=26 loops=1)
+        Sort Key: ((appointments.slot_start)::date)
+        Sort Method: quicksort  Memory: 26kB
+        Buffers: shared hit=1208
+        ->  HashAggregate  (cost=9375.75..9582.67 rows=16553 width=12) (actual time=33.672..33.774 rows=26 loops=1)
+              Group Key: (appointments.slot_start)::date
+              Batches: 1  Memory Usage: 793kB
+              Buffers: shared hit=1205
+              ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.43..8716.23 rows=131904 width=4) (actual time=0.027..22.901 rows=137597 loops=1)
+                    Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Filter: ((status)::text = 'COMPLETED'::text)
+                    Rows Removed by Filter: 30355
+                    Heap Fetches: 0
+                    Buffers: shared hit=1205
+Planning:
+  Buffers: shared hit=216
+Planning Time: 0.459 ms
+Execution Time: 34.220 ms
+=== R20 run 3 ===
+WindowAgg  (cost=10742.60..11032.28 rows=16553 width=44) (actual time=33.603..33.613 rows=26 loops=1)
+  Buffers: shared hit=1208
+  ->  Sort  (cost=10742.60..10783.98 rows=16553 width=12) (actual time=33.592..33.594 rows=26 loops=1)
+        Sort Key: ((appointments.slot_start)::date)
+        Sort Method: quicksort  Memory: 26kB
+        Buffers: shared hit=1208
+        ->  HashAggregate  (cost=9375.75..9582.67 rows=16553 width=12) (actual time=33.504..33.571 rows=26 loops=1)
+              Group Key: (appointments.slot_start)::date
+              Batches: 1  Memory Usage: 793kB
+              Buffers: shared hit=1205
+              ->  Index Only Scan using ix_appt_slot_cover on appointments  (cost=0.43..8716.23 rows=131904 width=4) (actual time=0.024..22.886 rows=137597 loops=1)
+                    Index Cond: ((slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                    Filter: ((status)::text = 'COMPLETED'::text)
+                    Rows Removed by Filter: 30355
+                    Heap Fetches: 0
+                    Buffers: shared hit=1205
+Planning:
+  Buffers: shared hit=216
+Planning Time: 0.442 ms
+Execution Time: 33.992 ms

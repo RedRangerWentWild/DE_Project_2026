@@ -1,0 +1,65 @@
+=== R13 run 1 ===
+Nested Loop Anti Join  (cost=0.29..544.14 rows=292 width=32) (actual time=0.027..0.945 rows=292 loops=1)
+  Buffers: shared hit=3021
+  ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=32) (actual time=0.003..0.090 rows=1500 loops=1)
+        Buffers: shared hit=20
+  ->  Index Only Scan using ix_sched_clinic on doctor_schedules sc  (cost=0.29..0.72 rows=20 width=4) (actual time=0.000..0.000 rows=1 loops=1500)
+        Index Cond: (clinic_id = c.clinic_id)
+        Heap Fetches: 0
+        Buffers: shared hit=3001
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.613 ms
+Execution Time: 0.992 ms
+=== R13 run 2 ===
+Nested Loop Anti Join  (cost=0.29..544.14 rows=292 width=32) (actual time=0.029..0.951 rows=292 loops=1)
+  Buffers: shared hit=3021
+  ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=32) (actual time=0.003..0.095 rows=1500 loops=1)
+        Buffers: shared hit=20
+  ->  Index Only Scan using ix_sched_clinic on doctor_schedules sc  (cost=0.29..0.72 rows=20 width=4) (actual time=0.000..0.000 rows=1 loops=1500)
+        Index Cond: (clinic_id = c.clinic_id)
+        Heap Fetches: 0
+        Buffers: shared hit=3001
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.588 ms
+Execution Time: 1.000 ms
+=== R13 run 3 ===
+Nested Loop Anti Join  (cost=0.29..544.14 rows=292 width=32) (actual time=0.028..1.059 rows=292 loops=1)
+  Buffers: shared hit=3021
+  ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=32) (actual time=0.003..0.121 rows=1500 loops=1)
+        Buffers: shared hit=20
+  ->  Index Only Scan using ix_sched_clinic on doctor_schedules sc  (cost=0.29..0.72 rows=20 width=4) (actual time=0.000..0.000 rows=1 loops=1500)
+        Index Cond: (clinic_id = c.clinic_id)
+        Heap Fetches: 0
+        Buffers: shared hit=3001
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.578 ms
+Execution Time: 1.109 ms
+=== R13 run 4 ===
+Nested Loop Anti Join  (cost=0.29..544.14 rows=292 width=32) (actual time=0.028..0.992 rows=292 loops=1)
+  Buffers: shared hit=3021
+  ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=32) (actual time=0.003..0.097 rows=1500 loops=1)
+        Buffers: shared hit=20
+  ->  Index Only Scan using ix_sched_clinic on doctor_schedules sc  (cost=0.29..0.72 rows=20 width=4) (actual time=0.000..0.000 rows=1 loops=1500)
+        Index Cond: (clinic_id = c.clinic_id)
+        Heap Fetches: 0
+        Buffers: shared hit=3001
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.606 ms
+Execution Time: 1.044 ms
+=== R13 run 5 ===
+Nested Loop Anti Join  (cost=0.29..544.14 rows=292 width=32) (actual time=0.026..0.992 rows=292 loops=1)
+  Buffers: shared hit=3021
+  ->  Seq Scan on clinics c  (cost=0.00..35.00 rows=1500 width=32) (actual time=0.002..0.127 rows=1500 loops=1)
+        Buffers: shared hit=20
+  ->  Index Only Scan using ix_sched_clinic on doctor_schedules sc  (cost=0.29..0.72 rows=20 width=4) (actual time=0.000..0.000 rows=1 loops=1500)
+        Index Cond: (clinic_id = c.clinic_id)
+        Heap Fetches: 0
+        Buffers: shared hit=3001
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.596 ms
+Execution Time: 1.039 ms

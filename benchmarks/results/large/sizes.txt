@@ -1,0 +1,153 @@
+# Storage on the seed and the large data, each measured on a freshly built database (sql/01_schema.sql,
+# sql/02_load_data.sql with the folder renamed for the large data, sql/05_indexes.sql, ANALYZE), before any
+# benchmark run, on the Phase 5 machine. PostgreSQL 16.15, default configuration. Query: sizes.sql in this folder.
+
+########## LARGE DATA (large_data.zip, 3,000,000 appointments) ##########
+Tables and summary tables: exact row count, table size (heap + TOAST), size of all its indexes
+               table                |       kind        |  rows   | table_bytes | table_size | index_bytes | index_size 
+------------------------------------+-------------------+---------+-------------+------------+-------------+------------
+ appointments                       | table             | 3000000 |   440287232 | 420 MB     |   563691520 | 538 MB
+ prescription_items                 | table             | 4861080 |   347774976 | 332 MB     |   109502464 | 104 MB
+ prescriptions                      | table             | 1944432 |   143269888 | 137 MB     |    91693056 | 87 MB
+ patients                           | table             |  800000 |    88793088 | 85 MB      |    88694784 | 85 MB
+ doctor_reviews                     | table             |  608179 |    46309376 | 44 MB      |    27361280 | 26 MB
+ doctor_schedules                   | table             |  609747 |    37265408 | 36 MB      |    23855104 | 23 MB
+ doctors                            | table             |   60000 |     8290304 | 8096 kB    |     4636672 | 4528 kB
+ doctor_specializations             | table             |   74000 |     2777088 | 2712 kB    |     3039232 | 2968 kB
+ clinics                            | table             |   30000 |     3432448 | 3352 kB    |     1892352 | 1848 kB
+ doctor_rating_summary              | materialized view |   59984 |     3923968 | 3832 kB    |     1359872 | 1328 kB
+ monthly_medicine_by_specialization | materialized view |    4050 |      344064 | 336 kB     |      253952 | 248 kB
+ cities                             | table             |      10 |        8192 | 8192 bytes |       32768 | 32 kB
+ specializations                    | table             |      15 |        8192 | 8192 bytes |       32768 | 32 kB
+
+Totals
+ tables_bytes | tables  | indexes_on_tables_bytes | indexes_on_tables | summary_tables_bytes | summary_tables_with_indexes | database_bytes | database 
+--------------+---------+-------------------------+-------------------+----------------------+-----------------------------+----------------+----------
+   1118216192 | 1066 MB |               914432000 | 872 MB            |              5881856 | 5744 kB                     |     2046819351 | 1952 MB
+
+Phase 4 objects (sql/05_indexes.sql): the 7 indexes, the 2 summary tables and their unique indexes (main relation sizes, as in optimized/index_sizes.txt)
+               object               |       kind        |              on_table              |   bytes   |  size   | pct_of_table 
+------------------------------------+-------------------+------------------------------------+-----------+---------+--------------
+ ix_appt_doctor_slot                | index             | appointments                       | 173457408 | 165 MB  |         39.4
+ ix_appt_open_slot_end              | index             | appointments                       |    278528 | 272 kB  |          0.1
+ ix_appt_patient                    | index             | appointments                       | 146120704 | 139 MB  |         33.2
+ ix_appt_slot_cover                 | index             | appointments                       | 176431104 | 168 MB  |         40.1
+ doctor_rating_summary              | materialized view |                                    |   3883008 | 3792 kB |             
+ ux_rating_summary_doctor           | index             | doctor_rating_summary              |   1359872 | 1328 kB |         35.0
+ ix_sched_clinic                    | index             | doctor_schedules                   |   4612096 | 4504 kB |         12.4
+ monthly_medicine_by_specialization | materialized view |                                    |    311296 | 304 kB  |             
+ ux_monthly_medicine                | index             | monthly_medicine_by_specialization |    253952 | 248 kB  |         81.6
+ ix_patients_allergies              | index             | patients                           |   1064960 | 1040 kB |          1.2
+ ix_presc_followup                  | index             | prescriptions                      |   4300800 | 4200 kB |          3.0
+
+ phase4_objects_total | the_7_indexes | the_2_summary_tables_with_their_indexes 
+----------------------+---------------+-----------------------------------------
+ 488 MB               | 483 MB        | 5672 kB
+
+B-tree depth: levels from the root page to the leaf pages (pageinspect, bt_metap), every B-tree index
+              on_table              |            index             | levels 
+------------------------------------+------------------------------+--------
+ appointments                       | appointments_pkey            |      3
+ appointments                       | ix_appt_doctor_slot          |      3
+ appointments                       | ix_appt_open_slot_end        |      2
+ appointments                       | ix_appt_patient              |      3
+ appointments                       | ix_appt_slot_cover           |      3
+ cities                             | cities_pkey                  |      1
+ cities                             | uq_cities_name_state         |      1
+ clinics                            | clinics_pkey                 |      2
+ clinics                            | uq_clinics_phone             |      2
+ doctor_rating_summary              | ux_rating_summary_doctor     |      2
+ doctor_reviews                     | doctor_reviews_pkey          |      3
+ doctor_reviews                     | uq_reviews_appointment       |      3
+ doctor_schedules                   | ix_sched_clinic              |      3
+ doctor_schedules                   | pk_doctor_schedules          |      3
+ doctor_specializations             | pk_doctor_specializations    |      2
+ doctor_specializations             | uq_ds_one_primary_per_doctor |      2
+ doctors                            | doctors_pkey                 |      2
+ doctors                            | uq_doctors_registration_no   |      3
+ monthly_medicine_by_specialization | ux_monthly_medicine          |      2
+ patients                           | patients_pkey                |      3
+ patients                           | uq_patients_email            |      3
+ patients                           | uq_patients_phone            |      3
+ prescription_items                 | pk_prescription_items        |      3
+ prescriptions                      | ix_presc_followup            |      3
+ prescriptions                      | prescriptions_pkey           |      3
+ prescriptions                      | uq_prescriptions_appointment |      3
+ specializations                    | specializations_pkey         |      1
+ specializations                    | uq_specializations_name      |      1
+
+
+########## SEED DATA (seed_data.zip, 150,000 appointments) ##########
+Tables and summary tables: exact row count, table size (heap + TOAST), size of all its indexes
+               table                |       kind        |  rows  | table_bytes | table_size | index_bytes | index_size 
+------------------------------------+-------------------+--------+-------------+------------+-------------+------------
+ appointments                       | table             | 150000 |    22315008 | 21 MB      |    28311552 | 27 MB
+ prescription_items                 | table             | 243085 |    17399808 | 17 MB      |     5488640 | 5360 kB
+ prescriptions                      | table             |  97234 |     7512064 | 7336 kB    |     4620288 | 4512 kB
+ patients                           | table             |  40000 |     4407296 | 4304 kB    |     4284416 | 4184 kB
+ doctor_reviews                     | table             |  30339 |     2351104 | 2296 kB    |     1392640 | 1360 kB
+ doctor_schedules                   | table             |  30499 |     1875968 | 1832 kB    |     1228800 | 1200 kB
+ doctors                            | table             |   3000 |      458752 | 448 kB     |      245760 | 240 kB
+ monthly_medicine_by_specialization | materialized view |   4050 |      344064 | 336 kB     |      253952 | 248 kB
+ doctor_specializations             | table             |   3700 |      172032 | 168 kB     |      196608 | 192 kB
+ doctor_rating_summary              | materialized view |   3000 |      237568 | 232 kB     |       90112 | 88 kB
+ clinics                            | table             |   1500 |      196608 | 192 kB     |      114688 | 112 kB
+ cities                             | table             |     10 |        8192 | 8192 bytes |       32768 | 32 kB
+ specializations                    | table             |     15 |        8192 | 8192 bytes |       32768 | 32 kB
+
+Totals
+ tables_bytes | tables | indexes_on_tables_bytes | indexes_on_tables | summary_tables_bytes | summary_tables_with_indexes | database_bytes | database 
+--------------+--------+-------------------------+-------------------+----------------------+-----------------------------+----------------+----------
+     56705024 | 54 MB  |                45948928 | 44 MB             |               925696 | 904 kB                      |      111885335 | 107 MB
+
+Phase 4 objects (sql/05_indexes.sql): the 7 indexes, the 2 summary tables and their unique indexes (main relation sizes, as in optimized/index_sizes.txt)
+               object               |       kind        |              on_table              |  bytes  |  size   | pct_of_table 
+------------------------------------+-------------------+------------------------------------+---------+---------+--------------
+ ix_appt_doctor_slot                | index             | appointments                       | 8699904 | 8496 kB |         39.0
+ ix_appt_open_slot_end              | index             | appointments                       |   40960 | 40 kB   |          0.2
+ ix_appt_patient                    | index             | appointments                       | 7331840 | 7160 kB |         32.9
+ ix_appt_slot_cover                 | index             | appointments                       | 8847360 | 8640 kB |         39.7
+ doctor_rating_summary              | materialized view |                                    |  196608 | 192 kB  |             
+ ux_rating_summary_doctor           | index             | doctor_rating_summary              |   90112 | 88 kB   |         45.8
+ ix_sched_clinic                    | index             | doctor_schedules                   |  253952 | 248 kB  |         13.8
+ monthly_medicine_by_specialization | materialized view |                                    |  311296 | 304 kB  |             
+ ux_monthly_medicine                | index             | monthly_medicine_by_specialization |  253952 | 248 kB  |         81.6
+ ix_patients_allergies              | index             | patients                           |   81920 | 80 kB   |          1.9
+ ix_presc_followup                  | index             | prescriptions                      |  229376 | 224 kB  |          3.1
+
+ phase4_objects_total | the_7_indexes | the_2_summary_tables_with_their_indexes 
+----------------------+---------------+-----------------------------------------
+ 25 MB                | 24 MB         | 832 kB
+
+B-tree depth: levels from the root page to the leaf pages (pageinspect, bt_metap), every B-tree index
+              on_table              |            index             | levels 
+------------------------------------+------------------------------+--------
+ appointments                       | appointments_pkey            |      3
+ appointments                       | ix_appt_doctor_slot          |      3
+ appointments                       | ix_appt_open_slot_end        |      2
+ appointments                       | ix_appt_patient              |      3
+ appointments                       | ix_appt_slot_cover           |      3
+ cities                             | cities_pkey                  |      1
+ cities                             | uq_cities_name_state         |      1
+ clinics                            | clinics_pkey                 |      2
+ clinics                            | uq_clinics_phone             |      2
+ doctor_rating_summary              | ux_rating_summary_doctor     |      2
+ doctor_reviews                     | doctor_reviews_pkey          |      2
+ doctor_reviews                     | uq_reviews_appointment       |      2
+ doctor_schedules                   | ix_sched_clinic              |      2
+ doctor_schedules                   | pk_doctor_schedules          |      2
+ doctor_specializations             | pk_doctor_specializations    |      2
+ doctor_specializations             | uq_ds_one_primary_per_doctor |      2
+ doctors                            | doctors_pkey                 |      2
+ doctors                            | uq_doctors_registration_no   |      2
+ monthly_medicine_by_specialization | ux_monthly_medicine          |      2
+ patients                           | patients_pkey                |      2
+ patients                           | uq_patients_email            |      3
+ patients                           | uq_patients_phone            |      2
+ prescription_items                 | pk_prescription_items        |      3
+ prescriptions                      | ix_presc_followup            |      2
+ prescriptions                      | prescriptions_pkey           |      2
+ prescriptions                      | uq_prescriptions_appointment |      2
+ specializations                    | specializations_pkey         |      1
+ specializations                    | uq_specializations_name      |      1
+

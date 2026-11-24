@@ -1,0 +1,120 @@
+=== R24 run 1 ===
+Gather Merge  (cost=675703.16..711615.54 rows=3270 width=20) (actual time=1837.372..2625.120 rows=11308 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=34687 read=181043, temp read=71465 written=71645
+  ->  Merge Join  (cost=674703.14..710238.08 rows=1362 width=20) (actual time=1689.451..2416.517 rows=3769 loops=3)
+        Merge Cond: ((a.slot_start = b.slot_start) AND (a.doctor_id = b.doctor_id))
+        Join Filter: (b.appointment_id > a.appointment_id)
+        Rows Removed by Join Filter: 904997
+        Buffers: shared hit=34687 read=181043, temp read=71465 written=71645
+        ->  Sort  (cost=202038.36..204854.53 rows=1126471 width=16) (actual time=489.398..552.589 rows=901227 loops=3)
+              Sort Key: a.slot_start DESC, a.doctor_id
+              Sort Method: external merge  Disk: 26968kB
+              Buffers: shared hit=1442 read=52504, temp read=19873 written=19919
+              Worker 0:  Sort Method: external merge  Disk: 26312kB
+              Worker 1:  Sort Method: external merge  Disk: 26320kB
+              ->  Parallel Seq Scan on appointments a  (cost=0.00..69555.49 rows=1126471 width=16) (actual time=127.193..222.794 rows=901227 loops=3)
+                    Filter: ((status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=1424 read=52504
+        ->  Materialize  (cost=472664.78..486182.44 rows=2703531 width=16) (actual time=1199.365..1601.936 rows=2693798 loops=3)
+              Buffers: shared hit=33245 read=128539, temp read=51592 written=51726
+              ->  Sort  (cost=472664.78..479423.61 rows=2703531 width=16) (actual time=1199.360..1377.028 rows=2690233 loops=3)
+                    Sort Key: b.slot_start DESC, b.doctor_id
+                    Sort Method: external merge  Disk: 68800kB
+                    Buffers: shared hit=33245 read=128539, temp read=51592 written=51726
+                    Worker 0:  Sort Method: external merge  Disk: 68800kB
+                    Worker 1:  Sort Method: external merge  Disk: 68800kB
+                    ->  Seq Scan on appointments b  (cost=0.00..91433.98 rows=2703531 width=16) (actual time=0.019..320.709 rows=2703682 loops=3)
+                          Filter: ((status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 296318
+                          Buffers: shared hit=33245 read=128539
+Planning:
+  Buffers: shared hit=338 read=3
+Planning Time: 0.706 ms
+JIT:
+  Functions: 66
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 1.809 ms, Inlining 123.740 ms, Optimization 154.550 ms, Emission 103.396 ms, Total 383.495 ms
+Execution Time: 2642.548 ms
+=== R24 run 2 ===
+Gather Merge  (cost=675703.16..711615.54 rows=3270 width=20) (actual time=1767.249..2485.843 rows=11308 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=10882 read=204848, temp read=68497 written=68677
+  ->  Merge Join  (cost=674703.14..710238.08 rows=1362 width=20) (actual time=1643.685..2327.124 rows=3769 loops=3)
+        Merge Cond: ((a.slot_start = b.slot_start) AND (a.doctor_id = b.doctor_id))
+        Join Filter: (b.appointment_id > a.appointment_id)
+        Rows Removed by Join Filter: 904997
+        Buffers: shared hit=10882 read=204848, temp read=68497 written=68677
+        ->  Sort  (cost=202038.36..204854.53 rows=1126471 width=16) (actual time=495.134..553.394 rows=901227 loops=3)
+              Sort Key: a.slot_start DESC, a.doctor_id
+              Sort Method: external merge  Disk: 29472kB
+              Buffers: shared hit=1664 read=52282, temp read=16905 written=16951
+              Worker 0:  Sort Method: external merge  Disk: 23800kB
+              Worker 1:  Sort Method: external merge  Disk: 26320kB
+              ->  Parallel Seq Scan on appointments a  (cost=0.00..69555.49 rows=1126471 width=16) (actual time=134.637..233.074 rows=901227 loops=3)
+                    Filter: ((status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=1646 read=52282
+        ->  Materialize  (cost=472664.78..486182.44 rows=2703531 width=16) (actual time=1146.409..1525.506 rows=2701884 loops=3)
+              Buffers: shared hit=9218 read=152566, temp read=51592 written=51726
+              ->  Sort  (cost=472664.78..479423.61 rows=2703531 width=16) (actual time=1146.404..1312.586 rows=2698383 loops=3)
+                    Sort Key: b.slot_start DESC, b.doctor_id
+                    Sort Method: external merge  Disk: 68800kB
+                    Buffers: shared hit=9218 read=152566, temp read=51592 written=51726
+                    Worker 0:  Sort Method: external merge  Disk: 68800kB
+                    Worker 1:  Sort Method: external merge  Disk: 68800kB
+                    ->  Seq Scan on appointments b  (cost=0.00..91433.98 rows=2703531 width=16) (actual time=0.024..287.268 rows=2703682 loops=3)
+                          Filter: ((status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 296318
+                          Buffers: shared hit=9218 read=152566
+Planning:
+  Buffers: shared hit=341
+Planning Time: 0.688 ms
+JIT:
+  Functions: 66
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 1.972 ms, Inlining 137.653 ms, Optimization 158.377 ms, Emission 106.994 ms, Total 404.995 ms
+Execution Time: 2503.126 ms
+=== R24 run 3 ===
+Gather Merge  (cost=675703.16..711615.54 rows=3270 width=20) (actual time=1767.938..2507.351 rows=11308 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=37577 read=178153, temp read=68457 written=68643
+  ->  Merge Join  (cost=674703.14..710238.08 rows=1362 width=20) (actual time=1675.182..2381.172 rows=3769 loops=3)
+        Merge Cond: ((a.slot_start = b.slot_start) AND (a.doctor_id = b.doctor_id))
+        Join Filter: (b.appointment_id > a.appointment_id)
+        Rows Removed by Join Filter: 904997
+        Buffers: shared hit=37577 read=178153, temp read=68457 written=68643
+        ->  Sort  (cost=202038.36..204854.53 rows=1126471 width=16) (actual time=491.733..553.489 rows=901227 loops=3)
+              Sort Key: a.slot_start DESC, a.doctor_id
+              Sort Method: external merge  Disk: 28088kB
+              Buffers: shared hit=1857 read=52089, temp read=16870 written=16917
+              Worker 0:  Sort Method: external merge  Disk: 27424kB
+              Worker 1:  Sort Method: external merge  Disk: 24080kB
+              ->  Parallel Seq Scan on appointments a  (cost=0.00..69555.49 rows=1126471 width=16) (actual time=130.124..229.005 rows=901227 loops=3)
+                    Filter: ((status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=1839 read=52089
+        ->  Materialize  (cost=472664.78..486182.44 rows=2703531 width=16) (actual time=1182.808..1573.927 rows=2705551 loops=3)
+              Buffers: shared hit=35720 read=126064, temp read=51587 written=51726
+              ->  Sort  (cost=472664.78..479423.61 rows=2703531 width=16) (actual time=1182.803..1356.112 rows=2702122 loops=3)
+                    Sort Key: b.slot_start DESC, b.doctor_id
+                    Sort Method: external merge  Disk: 68800kB
+                    Buffers: shared hit=35720 read=126064, temp read=51587 written=51726
+                    Worker 0:  Sort Method: external merge  Disk: 68800kB
+                    Worker 1:  Sort Method: external merge  Disk: 68800kB
+                    ->  Seq Scan on appointments b  (cost=0.00..91433.98 rows=2703531 width=16) (actual time=0.018..317.225 rows=2703682 loops=3)
+                          Filter: ((status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 296318
+                          Buffers: shared hit=35720 read=126064
+Planning:
+  Buffers: shared hit=341
+Planning Time: 0.975 ms
+JIT:
+  Functions: 66
+  Options: Inlining true, Optimization true, Expressions true, Deforming true
+  Timing: Generation 1.901 ms, Inlining 125.707 ms, Optimization 158.145 ms, Emission 106.615 ms, Total 392.367 ms
+Execution Time: 2525.744 ms

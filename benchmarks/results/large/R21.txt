@@ -1,0 +1,33 @@
+=== R21 run 1 ===
+Limit  (cost=0.43..57.84 rows=100 width=25) (actual time=16.832..17.068 rows=100 loops=1)
+  Buffers: shared hit=32022 read=1812
+  ->  Index Scan Backward using ix_appt_slot_cover on appointments  (cost=0.43..271451.48 rows=472822 width=25) (actual time=16.830..17.059 rows=100 loops=1)
+        Filter: (((status)::text = 'COMPLETED'::text) AND ((payment_status)::text = 'PENDING'::text))
+        Rows Removed by Filter: 36291
+        Buffers: shared hit=32022 read=1812
+Planning:
+  Buffers: shared hit=190 read=2
+Planning Time: 0.413 ms
+Execution Time: 17.088 ms
+=== R21 run 2 ===
+Limit  (cost=0.43..57.84 rows=100 width=25) (actual time=10.632..10.779 rows=100 loops=1)
+  Buffers: shared hit=33834
+  ->  Index Scan Backward using ix_appt_slot_cover on appointments  (cost=0.43..271451.48 rows=472822 width=25) (actual time=10.631..10.771 rows=100 loops=1)
+        Filter: (((status)::text = 'COMPLETED'::text) AND ((payment_status)::text = 'PENDING'::text))
+        Rows Removed by Filter: 36291
+        Buffers: shared hit=33834
+Planning:
+  Buffers: shared hit=192
+Planning Time: 0.387 ms
+Execution Time: 10.799 ms
+=== R21 run 3 ===
+Limit  (cost=0.43..57.84 rows=100 width=25) (actual time=9.949..10.092 rows=100 loops=1)
+  Buffers: shared hit=33834
+  ->  Index Scan Backward using ix_appt_slot_cover on appointments  (cost=0.43..271451.48 rows=472822 width=25) (actual time=9.948..10.085 rows=100 loops=1)
+        Filter: (((status)::text = 'COMPLETED'::text) AND ((payment_status)::text = 'PENDING'::text))
+        Rows Removed by Filter: 36291
+        Buffers: shared hit=33834
+Planning:
+  Buffers: shared hit=192
+Planning Time: 0.368 ms
+Execution Time: 10.112 ms

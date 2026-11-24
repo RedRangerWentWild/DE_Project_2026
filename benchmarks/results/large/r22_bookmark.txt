@@ -1,0 +1,27 @@
+# How the R22 bookmark of workload_large.sql was chosen, and the check that it gives page 4,001.
+# psql -X -d practo_large, on the benchmarked large database.
+
+R22 bookmark on the large data: the last row of page 4,000 = row 100,000 newest first
+        slot_start         | appointment_id 
+---------------------------+----------------
+ 2026-06-19 10:40:00+05:30 |        2860103
+(1 row)
+
+Large-data rows that come before the seed bookmark (2025-07-08 12:15:00+05:30, 50125) in this order
+ rows_before_seed_bookmark 
+---------------------------
+                   2000274
+(1 row)
+
+Is the seed bookmark a row of the large data?
+ seed_bookmark_rows 
+--------------------
+                  0
+(1 row)
+
+R22 as benchmarked (workload_large.sql) against page 4,001 by OFFSET in the same order: rows in one and not the other
+ keyset_rows | offset_rows | only_in_keyset | only_in_offset 
+-------------+-------------+----------------+----------------
+          25 |          25 |              0 |              0
+(1 row)
+

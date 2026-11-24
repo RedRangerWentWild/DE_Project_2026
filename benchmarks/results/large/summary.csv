@@ -1,0 +1,31 @@
+query_id,type,avg_ms,median_ms,min_ms,max_ms,scan_nodes
+R01,READ,18.321,16.927,16.102,21.934,Index Only Scan using pk_doctor_specializations on doctor_specializations | Index Scan using specializations_pkey on specializations | Index Scan using doctors_pkey on doctors | Index Scan using pk_doctor_schedules on doctor_schedules | Index Scan using clinics_pkey on clinics
+R02,READ,0.073,0.064,0.062,0.094,Index Scan using pk_doctor_schedules on doctor_schedules | Index Scan using clinics_pkey on clinics
+R03,READ,0.189,0.164,0.155,0.247,Index Scan using pk_doctor_schedules on doctor_schedules | Index Only Scan using ix_appt_doctor_slot on appointments
+R04,READ,0.086,0.085,0.067,0.106,Index Scan using ix_appt_patient on appointments | Index Scan using doctors_pkey on doctors | Index Scan using clinics_pkey on clinics
+R05,READ,0.080,0.077,0.074,0.089,Index Scan using ix_appt_doctor_slot on appointments | Index Scan using patients_pkey on patients
+R06,READ,0.056,0.053,0.039,0.075,Index Scan using uq_patients_phone on patients
+R07,READ,0.068,0.061,0.060,0.083,Index Scan using uq_prescriptions_appointment on prescriptions | Index Scan using pk_prescription_items on prescription_items
+R08,READ,365.878,299.982,298.153,499.500,Seq Scan on doctor_specializations | Index Only Scan using ix_appt_slot_cover on appointments | Seq Scan on specializations
+R09,READ,139.738,133.793,126.381,159.040,Bitmap Heap Scan on appointments | Bitmap Index Scan on ix_appt_slot_cover
+R10,READ,508.470,507.714,492.649,525.048,Seq Scan on appointments | Bitmap Heap Scan on patients | Bitmap Index Scan on ix_patients_allergies | Index Scan using uq_prescriptions_appointment on prescriptions | Index Scan using pk_prescription_items on prescription_items
+R11,READ,26.937,24.868,21.818,34.126,Bitmap Heap Scan on prescriptions | Bitmap Index Scan on ix_presc_followup | Index Scan using appointments_pkey on appointments | Index Only Scan using ix_appt_patient on appointments
+R12,READ,112.327,114.695,106.378,115.907,Index Only Scan using ix_appt_slot_cover on appointments
+R13,READ,22.998,22.262,21.885,24.847,Seq Scan on clinics | Index Only Scan using ix_sched_clinic on doctor_schedules
+R14,READ,15.187,14.927,14.605,16.030,Seq Scan on doctor_rating_summary
+R15,READ,0.365,0.314,0.274,0.507,Bitmap Heap Scan on monthly_medicine_by_specialization | Bitmap Index Scan on ux_monthly_medicine
+R16,READ,91.364,90.409,85.432,98.252,Bitmap Heap Scan on appointments | Bitmap Index Scan on ix_appt_slot_cover | Seq Scan on clinics
+R17,READ,1120.038,1114.804,1111.155,1134.155,Index Only Scan using ix_appt_slot_cover on appointments | Seq Scan on patients
+R18,READ,109.411,108.598,101.586,118.049,Seq Scan on doctors | Seq Scan on doctor_schedules | Seq Scan on clinics
+R19,READ,381.248,388.559,360.114,395.072,Seq Scan on doctors | Seq Scan on doctor_schedules | Seq Scan on clinics | Index Only Scan using ix_appt_doctor_slot on appointments
+R20,READ,34.952,34.220,33.992,36.643,Index Only Scan using ix_appt_slot_cover on appointments
+R21,READ,12.666,10.799,10.112,17.088,Index Scan using ix_appt_slot_cover on appointments
+R22,READ,0.052,0.052,0.047,0.056,Index Only Scan using ix_appt_slot_cover on appointments
+R23,READ,0.044,0.041,0.039,0.051,Index Scan using uq_doctors_registration_no on doctors
+R24,READ,2557.139,2525.744,2503.126,2642.548,Seq Scan on appointments
+R25,READ,700.403,690.165,618.202,792.843,Index Only Scan using ix_appt_slot_cover on appointments | Seq Scan on doctor_specializations
+W01,WRITE,0.862,0.823,0.775,0.987,Index Scan using pk_doctor_schedules on doctor_schedules | Index Scan using doctors_pkey on doctors
+W02,WRITE,0.332,0.298,0.293,0.404,Index Only Scan using ix_appt_slot_cover on appointments | Index Scan using appointments_pkey on appointments
+W03,WRITE,0.061,0.064,0.052,0.068,Index Scan using uq_prescriptions_appointment on prescriptions
+W04,WRITE,101.711,106.506,90.931,107.697,Index Scan using ix_appt_open_slot_end on appointments
+W05,WRITE,0.046,0.043,0.041,0.054,Index Scan using ix_appt_doctor_slot on appointments

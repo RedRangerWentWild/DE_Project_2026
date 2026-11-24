@@ -1,0 +1,75 @@
+=== R14 run 1 ===
+Limit  (cost=119.50..119.55 rows=20 width=76) (actual time=0.851..0.854 rows=20 loops=1)
+  Buffers: shared hit=30
+  ->  Sort  (cost=119.50..122.99 rows=1394 width=76) (actual time=0.849..0.850 rows=20 loops=1)
+        Sort Key: (round(avg_rating_exact, 2)) DESC, reviews DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=30
+        ->  Seq Scan on doctor_rating_summary  (cost=0.00..82.41 rows=1394 width=76) (actual time=0.010..0.628 rows=1394 loops=1)
+              Filter: (reviews >= 10)
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=24
+Planning:
+  Buffers: shared hit=83
+Planning Time: 0.316 ms
+Execution Time: 0.878 ms
+=== R14 run 2 ===
+Limit  (cost=119.50..119.55 rows=20 width=76) (actual time=1.208..1.212 rows=20 loops=1)
+  Buffers: shared hit=30
+  ->  Sort  (cost=119.50..122.99 rows=1394 width=76) (actual time=1.207..1.208 rows=20 loops=1)
+        Sort Key: (round(avg_rating_exact, 2)) DESC, reviews DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=30
+        ->  Seq Scan on doctor_rating_summary  (cost=0.00..82.41 rows=1394 width=76) (actual time=0.011..0.865 rows=1394 loops=1)
+              Filter: (reviews >= 10)
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=24
+Planning:
+  Buffers: shared hit=83
+Planning Time: 0.403 ms
+Execution Time: 1.237 ms
+=== R14 run 3 ===
+Limit  (cost=119.50..119.55 rows=20 width=76) (actual time=0.834..0.836 rows=20 loops=1)
+  Buffers: shared hit=30
+  ->  Sort  (cost=119.50..122.99 rows=1394 width=76) (actual time=0.832..0.833 rows=20 loops=1)
+        Sort Key: (round(avg_rating_exact, 2)) DESC, reviews DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=30
+        ->  Seq Scan on doctor_rating_summary  (cost=0.00..82.41 rows=1394 width=76) (actual time=0.009..0.614 rows=1394 loops=1)
+              Filter: (reviews >= 10)
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=24
+Planning:
+  Buffers: shared hit=83
+Planning Time: 0.297 ms
+Execution Time: 0.858 ms
+=== R14 run 4 ===
+Limit  (cost=119.50..119.55 rows=20 width=76) (actual time=0.981..0.984 rows=20 loops=1)
+  Buffers: shared hit=30
+  ->  Sort  (cost=119.50..122.99 rows=1394 width=76) (actual time=0.979..0.980 rows=20 loops=1)
+        Sort Key: (round(avg_rating_exact, 2)) DESC, reviews DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=30
+        ->  Seq Scan on doctor_rating_summary  (cost=0.00..82.41 rows=1394 width=76) (actual time=0.009..0.738 rows=1394 loops=1)
+              Filter: (reviews >= 10)
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=24
+Planning:
+  Buffers: shared hit=83
+Planning Time: 0.295 ms
+Execution Time: 1.006 ms
+=== R14 run 5 ===
+Limit  (cost=119.50..119.55 rows=20 width=76) (actual time=1.161..1.164 rows=20 loops=1)
+  Buffers: shared hit=30
+  ->  Sort  (cost=119.50..122.99 rows=1394 width=76) (actual time=1.160..1.161 rows=20 loops=1)
+        Sort Key: (round(avg_rating_exact, 2)) DESC, reviews DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=30
+        ->  Seq Scan on doctor_rating_summary  (cost=0.00..82.41 rows=1394 width=76) (actual time=0.008..0.871 rows=1394 loops=1)
+              Filter: (reviews >= 10)
+              Rows Removed by Filter: 1606
+              Buffers: shared hit=24
+Planning:
+  Buffers: shared hit=83
+Planning Time: 0.308 ms
+Execution Time: 1.184 ms

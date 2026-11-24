@@ -1,6 +1,6 @@
 # Benchmark results
 
-Every timing in [`docs/03_baseline_timings.md`](../../docs/03_baseline_timings.md) and [`docs/04_optimization_report.md`](../../docs/04_optimization_report.md) comes from a file in this folder. The plan files and `summary.csv` are written by [`run_benchmark.sh`](../run_benchmark.sh), the script given with the project.
+Every timing in [`docs/03_baseline_timings.md`](../../docs/03_baseline_timings.md), [`docs/04_optimization_report.md`](../../docs/04_optimization_report.md) and section 2 of [`docs/05_scalability_report.md`](../../docs/05_scalability_report.md) comes from a file in this folder. The plan files and `summary.csv` are written by [`run_benchmark.sh`](../run_benchmark.sh), the script given with the project.
 
 | Folder | What ran | Database | Used in |
 |--------|----------|----------|---------|
@@ -9,6 +9,8 @@ Every timing in [`docs/03_baseline_timings.md`](../../docs/03_baseline_timings.m
 | `indexes_only/` | the 30 original queries again, 3 runs each | with `sql/05_indexes.sql` | docs/04 section 6: what the indexes did without the rewrites |
 | `rejected/` | rewrites we tried and did not keep, each file with its query and 3 runs | with `sql/05_indexes.sql` | docs/04 section 9 |
 | `write_overhead/` | each write query in one connection with `pgbench` (500 transactions, 100 for W04; the statements are in `scripts/`), W01 twice per new connection, and the refresh of the two summary tables | `practo_base` and `practo` | docs/04 section 7 |
+| `large/` | `large/workload_large.sql`: the optimized queries with R22's bookmark taken from the large data, 3 runs each | `practo_large`: the faculty's `large_data.zip` (3,000,000 appointments), with `sql/05_indexes.sql` | docs/05 section 2 |
+| `large/seed_same_machine/` | `sql/06_optimized_queries.sql`, 5 runs each, on the machine of the large run | a fresh seed database with `sql/05_indexes.sql` | docs/05 section 2: growth measured on one machine |
 
 Other files in `optimized/`:
 
@@ -17,6 +19,14 @@ Other files in `optimized/`:
 | `result_check.txt` | The output of `../compare_results.sh practo_base practo`: the proof that the results are unchanged (docs/04 section 4) |
 | `original_ties_repeat_runs.txt` | The original R21 and R10 run 10 times on the Phase 3 database: their tied rows already vary from run to run (section 4.3) |
 | `index_sizes.txt` | The size of every index and summary table, against its table (section 8) |
+
+Other files in `large/` (docs/05 section 2):
+
+| File | Content |
+|------|---------|
+| `workload_large.sql` | The workload of the large run: `sql/06_optimized_queries.sql` with only R22's bookmark changed (section 2.5) |
+| `r22_bookmark.txt` | How that bookmark was chosen on the large data, and the check that R22 then returns page 4,001 |
+| `sizes.sql`, `sizes.txt` | Table, index and database sizes and B-tree depth, on freshly built seed and large databases (section 2.6) |
 
 `summary.csv` has one row per query:
 

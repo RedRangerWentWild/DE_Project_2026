@@ -1,0 +1,180 @@
+=== R01 run 1 ===
+Limit  (cost=4134.43..4167.81 rows=20 width=27) (actual time=15.683..21.343 rows=20 loops=1)
+  Buffers: shared hit=14536 read=1825 written=1825
+  ->  Unique  (cost=4134.43..16161.54 rows=7206 width=27) (actual time=15.682..21.338 rows=20 loops=1)
+        Buffers: shared hit=14536 read=1825 written=1825
+        ->  Nested Loop  (cost=4134.43..16089.48 rows=7206 width=27) (actual time=15.681..21.292 rows=165 loops=1)
+              Buffers: shared hit=14536 read=1825 written=1825
+              ->  Nested Loop  (cost=4134.13..9511.13 rows=45040 width=31) (actual time=15.462..19.393 rows=1325 loops=1)
+                    Buffers: shared hit=14231 read=1620 written=1620
+                    ->  Gather Merge  (cost=4133.70..4649.89 rows=4432 width=31) (actual time=15.434..17.304 rows=121 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          Buffers: shared hit=13994 read=1365 written=1365
+                          ->  Sort  (cost=3133.68..3138.30 rows=1847 width=31) (actual time=13.386..13.418 rows=771 loops=3)
+                                Sort Key: d.experience_years DESC, d.doctor_id, d.full_name, d.consultation_fee
+                                Sort Method: quicksort  Memory: 129kB
+                                Buffers: shared hit=13994 read=1365 written=1365
+                                Worker 0:  Sort Method: quicksort  Memory: 132kB
+                                Worker 1:  Sort Method: quicksort  Memory: 141kB
+                                ->  Nested Loop  (cost=0.73..3033.47 rows=1847 width=31) (actual time=0.091..12.794 rows=1510 loops=3)
+                                      Buffers: shared hit=13936 read=1365 written=1365
+                                      ->  Nested Loop  (cost=0.44..2271.93 rows=2055 width=4) (actual time=0.073..7.951 rows=1667 loops=3)
+                                            Buffers: shared hit=97 read=202 written=201
+                                            ->  Parallel Index Only Scan using pk_doctor_specializations on doctor_specializations ds  (cost=0.29..1498.63 rows=30833 width=6) (actual time=0.041..2.629 rows=24667 loops=3)
+                                                  Heap Fetches: 0
+                                                  Buffers: shared hit=6 read=201 written=200
+                                            ->  Memoize  (cost=0.15..0.17 rows=1 width=2) (actual time=0.000..0.000 rows=0 loops=74000)
+                                                  Cache Key: ds.spec_id
+                                                  Cache Mode: logical
+                                                  Hits: 22989  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  Buffers: shared hit=91 read=1 written=1
+                                                  Worker 0:  Hits: 24080  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  Worker 1:  Hits: 26886  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  ->  Index Scan using specializations_pkey on specializations s  (cost=0.14..0.16 rows=1 width=2) (actual time=0.002..0.002 rows=0 loops=45)
+                                                        Index Cond: (spec_id = ds.spec_id)
+                                                        Filter: ((spec_name)::text = 'Dermatologist'::text)
+                                                        Rows Removed by Filter: 1
+                                                        Buffers: shared hit=91 read=1 written=1
+                                      ->  Index Scan using doctors_pkey on doctors d  (cost=0.29..0.37 rows=1 width=27) (actual time=0.003..0.003 rows=1 loops=5000)
+                                            Index Cond: (doctor_id = ds.doctor_id)
+                                            Filter: is_verified
+                                            Rows Removed by Filter: 0
+                                            Buffers: shared hit=13839 read=1163 written=1164
+                    ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.42..0.99 rows=11 width=8) (actual time=0.014..0.016 rows=11 loops=121)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Buffers: shared hit=237 read=255 written=255
+              ->  Memoize  (cost=0.30..0.32 rows=1 width=4) (actual time=0.001..0.001 rows=0 loops=1325)
+                    Cache Key: sc.clinic_id
+                    Cache Mode: logical
+                    Hits: 1154  Misses: 171  Evictions: 0  Overflows: 0  Memory Usage: 13kB
+                    Buffers: shared hit=305 read=205 written=205
+                    ->  Index Scan using clinics_pkey on clinics c  (cost=0.29..0.31 rows=1 width=4) (actual time=0.008..0.008 rows=0 loops=171)
+                          Index Cond: (clinic_id = sc.clinic_id)
+                          Filter: (city_id = 1)
+                          Rows Removed by Filter: 1
+                          Buffers: shared hit=305 read=205 written=205
+Planning:
+  Buffers: shared hit=353 read=20 written=20
+Planning Time: 2.157 ms
+Execution Time: 21.934 ms
+=== R01 run 2 ===
+Limit  (cost=4134.43..4167.81 rows=20 width=27) (actual time=12.542..15.632 rows=20 loops=1)
+  Buffers: shared hit=16361
+  ->  Unique  (cost=4134.43..16161.54 rows=7206 width=27) (actual time=12.540..15.628 rows=20 loops=1)
+        Buffers: shared hit=16361
+        ->  Nested Loop  (cost=4134.43..16089.48 rows=7206 width=27) (actual time=12.539..15.545 rows=165 loops=1)
+              Buffers: shared hit=16361
+              ->  Nested Loop  (cost=4134.13..9511.13 rows=45040 width=31) (actual time=12.443..14.744 rows=1325 loops=1)
+                    Buffers: shared hit=15851
+                    ->  Gather Merge  (cost=4133.70..4649.89 rows=4432 width=31) (actual time=12.427..13.974 rows=121 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          Buffers: shared hit=15359
+                          ->  Sort  (cost=3133.68..3138.30 rows=1847 width=31) (actual time=10.439..10.471 rows=741 loops=3)
+                                Sort Key: d.experience_years DESC, d.doctor_id, d.full_name, d.consultation_fee
+                                Sort Method: quicksort  Memory: 155kB
+                                Buffers: shared hit=15359
+                                Worker 0:  Sort Method: quicksort  Memory: 107kB
+                                Worker 1:  Sort Method: quicksort  Memory: 140kB
+                                ->  Nested Loop  (cost=0.73..3033.47 rows=1847 width=31) (actual time=0.054..9.820 rows=1510 loops=3)
+                                      Buffers: shared hit=15301
+                                      ->  Nested Loop  (cost=0.44..2271.93 rows=2055 width=4) (actual time=0.042..6.980 rows=1667 loops=3)
+                                            Buffers: shared hit=299
+                                            ->  Parallel Index Only Scan using pk_doctor_specializations on doctor_specializations ds  (cost=0.29..1498.63 rows=30833 width=6) (actual time=0.020..1.923 rows=24667 loops=3)
+                                                  Heap Fetches: 0
+                                                  Buffers: shared hit=207
+                                            ->  Memoize  (cost=0.15..0.17 rows=1 width=2) (actual time=0.000..0.000 rows=0 loops=74000)
+                                                  Cache Key: ds.spec_id
+                                                  Cache Mode: logical
+                                                  Hits: 30653  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  Buffers: shared hit=92
+                                                  Worker 0:  Hits: 17031  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  Worker 1:  Hits: 26271  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  ->  Index Scan using specializations_pkey on specializations s  (cost=0.14..0.16 rows=1 width=2) (actual time=0.001..0.001 rows=0 loops=45)
+                                                        Index Cond: (spec_id = ds.spec_id)
+                                                        Filter: ((spec_name)::text = 'Dermatologist'::text)
+                                                        Rows Removed by Filter: 1
+                                                        Buffers: shared hit=92
+                                      ->  Index Scan using doctors_pkey on doctors d  (cost=0.29..0.37 rows=1 width=27) (actual time=0.001..0.001 rows=1 loops=5000)
+                                            Index Cond: (doctor_id = ds.doctor_id)
+                                            Filter: is_verified
+                                            Rows Removed by Filter: 0
+                                            Buffers: shared hit=15002
+                    ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.42..0.99 rows=11 width=8) (actual time=0.004..0.005 rows=11 loops=121)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Buffers: shared hit=492
+              ->  Memoize  (cost=0.30..0.32 rows=1 width=4) (actual time=0.000..0.000 rows=0 loops=1325)
+                    Cache Key: sc.clinic_id
+                    Cache Mode: logical
+                    Hits: 1154  Misses: 171  Evictions: 0  Overflows: 0  Memory Usage: 13kB
+                    Buffers: shared hit=510
+                    ->  Index Scan using clinics_pkey on clinics c  (cost=0.29..0.31 rows=1 width=4) (actual time=0.003..0.003 rows=0 loops=171)
+                          Index Cond: (clinic_id = sc.clinic_id)
+                          Filter: (city_id = 1)
+                          Rows Removed by Filter: 1
+                          Buffers: shared hit=510
+Planning:
+  Buffers: shared hit=383
+Planning Time: 1.543 ms
+Execution Time: 16.102 ms
+=== R01 run 3 ===
+Limit  (cost=4134.43..4167.81 rows=20 width=27) (actual time=12.732..16.454 rows=20 loops=1)
+  Buffers: shared hit=16361
+  ->  Unique  (cost=4134.43..16161.54 rows=7206 width=27) (actual time=12.731..16.450 rows=20 loops=1)
+        Buffers: shared hit=16361
+        ->  Nested Loop  (cost=4134.43..16089.48 rows=7206 width=27) (actual time=12.730..16.412 rows=165 loops=1)
+              Buffers: shared hit=16361
+              ->  Nested Loop  (cost=4134.13..9511.13 rows=45040 width=31) (actual time=12.644..15.523 rows=1325 loops=1)
+                    Buffers: shared hit=15851
+                    ->  Gather Merge  (cost=4133.70..4649.89 rows=4432 width=31) (actual time=12.633..14.635 rows=121 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          Buffers: shared hit=15359
+                          ->  Sort  (cost=3133.68..3138.30 rows=1847 width=31) (actual time=10.737..10.767 rows=769 loops=3)
+                                Sort Key: d.experience_years DESC, d.doctor_id, d.full_name, d.consultation_fee
+                                Sort Method: quicksort  Memory: 128kB
+                                Buffers: shared hit=15359
+                                Worker 0:  Sort Method: quicksort  Memory: 139kB
+                                Worker 1:  Sort Method: quicksort  Memory: 135kB
+                                ->  Nested Loop  (cost=0.73..3033.47 rows=1847 width=31) (actual time=0.054..10.159 rows=1510 loops=3)
+                                      Buffers: shared hit=15301
+                                      ->  Nested Loop  (cost=0.44..2271.93 rows=2055 width=4) (actual time=0.042..7.320 rows=1667 loops=3)
+                                            Buffers: shared hit=299
+                                            ->  Parallel Index Only Scan using pk_doctor_specializations on doctor_specializations ds  (cost=0.29..1498.63 rows=30833 width=6) (actual time=0.018..2.065 rows=24667 loops=3)
+                                                  Heap Fetches: 0
+                                                  Buffers: shared hit=207
+                                            ->  Memoize  (cost=0.15..0.17 rows=1 width=2) (actual time=0.000..0.000 rows=0 loops=74000)
+                                                  Cache Key: ds.spec_id
+                                                  Cache Mode: logical
+                                                  Hits: 22984  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  Buffers: shared hit=92
+                                                  Worker 0:  Hits: 26160  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  Worker 1:  Hits: 24811  Misses: 15  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                                  ->  Index Scan using specializations_pkey on specializations s  (cost=0.14..0.16 rows=1 width=2) (actual time=0.001..0.001 rows=0 loops=45)
+                                                        Index Cond: (spec_id = ds.spec_id)
+                                                        Filter: ((spec_name)::text = 'Dermatologist'::text)
+                                                        Rows Removed by Filter: 1
+                                                        Buffers: shared hit=92
+                                      ->  Index Scan using doctors_pkey on doctors d  (cost=0.29..0.37 rows=1 width=27) (actual time=0.001..0.001 rows=1 loops=5000)
+                                            Index Cond: (doctor_id = ds.doctor_id)
+                                            Filter: is_verified
+                                            Rows Removed by Filter: 0
+                                            Buffers: shared hit=15002
+                    ->  Index Scan using pk_doctor_schedules on doctor_schedules sc  (cost=0.42..0.99 rows=11 width=8) (actual time=0.004..0.006 rows=11 loops=121)
+                          Index Cond: (doctor_id = ds.doctor_id)
+                          Buffers: shared hit=492
+              ->  Memoize  (cost=0.30..0.32 rows=1 width=4) (actual time=0.000..0.000 rows=0 loops=1325)
+                    Cache Key: sc.clinic_id
+                    Cache Mode: logical
+                    Hits: 1154  Misses: 171  Evictions: 0  Overflows: 0  Memory Usage: 13kB
+                    Buffers: shared hit=510
+                    ->  Index Scan using clinics_pkey on clinics c  (cost=0.29..0.31 rows=1 width=4) (actual time=0.003..0.003 rows=0 loops=171)
+                          Index Cond: (clinic_id = sc.clinic_id)
+                          Filter: (city_id = 1)
+                          Rows Removed by Filter: 1
+                          Buffers: shared hit=510
+Planning:
+  Buffers: shared hit=383
+Planning Time: 1.893 ms
+Execution Time: 16.927 ms

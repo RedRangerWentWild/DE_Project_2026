@@ -1,0 +1,102 @@
+=== R17 run 1 ===
+Sort  (cost=138868.82..138968.82 rows=40000 width=72) (actual time=1093.969..1093.975 rows=36 loops=1)
+  Sort Key: (CASE WHEN (visits.age_at_visit < '18 years'::interval) THEN '0-17'::text WHEN (visits.age_at_visit < '40 years'::interval) THEN '18-39'::text WHEN (visits.age_at_visit < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(visits.blood_group, 'unknown'::character varying))
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=7573 read=10785, temp read=5497 written=8373
+  CTE visits
+    ->  Hash Join  (cost=32692.43..105854.50 rows=835908 width=19) (actual time=174.584..824.523 rows=814694 loops=1)
+          Hash Cond: (a.patient_id = p.patient_id)
+          Buffers: shared hit=7570 read=10785, temp read=5497 written=5497
+          ->  Index Only Scan using ix_appt_slot_cover on appointments a  (cost=0.43..50538.15 rows=835908 width=12) (actual time=7.231..138.134 rows=814694 loops=1)
+                Index Cond: (slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+                Filter: ((status)::text = 'COMPLETED'::text)
+                Rows Removed by Filter: 215022
+                Heap Fetches: 0
+                Buffers: shared hit=7570
+          ->  Hash  (cost=18785.00..18785.00 rows=800000 width=11) (actual time=166.340..166.341 rows=800000 loops=1)
+                Buckets: 262144  Batches: 8  Memory Usage: 6321kB
+                Buffers: shared read=10785, temp written=2702
+                ->  Seq Scan on patients p  (cost=0.00..18785.00 rows=800000 width=11) (actual time=0.042..77.439 rows=800000 loops=1)
+                      Buffers: shared read=10785
+  ->  HashAggregate  (cost=29256.78..29956.78 rows=40000 width=72) (actual time=1093.738..1093.910 rows=36 loops=1)
+        Group Key: CASE WHEN (visits.age_at_visit < '18 years'::interval) THEN '0-17'::text WHEN (visits.age_at_visit < '40 years'::interval) THEN '18-39'::text WHEN (visits.age_at_visit < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END, COALESCE(visits.blood_group, 'unknown'::character varying)
+        Batches: 1  Memory Usage: 1561kB
+        Buffers: shared hit=7570 read=10785, temp read=5497 written=8373
+        ->  CTE Scan on visits  (cost=0.00..22987.47 rows=835908 width=64) (actual time=174.593..993.372 rows=814694 loops=1)
+              Buffers: shared hit=7570 read=10785, temp read=5497 written=8373
+Planning:
+  Buffers: shared hit=372 read=10
+Planning Time: 0.992 ms
+JIT:
+  Functions: 17
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 0.551 ms, Inlining 0.000 ms, Optimization 0.428 ms, Emission 6.855 ms, Total 7.834 ms
+Execution Time: 1111.155 ms
+=== R17 run 2 ===
+Sort  (cost=138868.82..138968.82 rows=40000 width=72) (actual time=1115.563..1115.569 rows=36 loops=1)
+  Sort Key: (CASE WHEN (visits.age_at_visit < '18 years'::interval) THEN '0-17'::text WHEN (visits.age_at_visit < '40 years'::interval) THEN '18-39'::text WHEN (visits.age_at_visit < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(visits.blood_group, 'unknown'::character varying))
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=7605 read=10753, temp read=5497 written=8373
+  CTE visits
+    ->  Hash Join  (cost=32692.43..105854.50 rows=835908 width=19) (actual time=191.265..845.208 rows=814694 loops=1)
+          Hash Cond: (a.patient_id = p.patient_id)
+          Buffers: shared hit=7602 read=10753, temp read=5497 written=5497
+          ->  Index Only Scan using ix_appt_slot_cover on appointments a  (cost=0.43..50538.15 rows=835908 width=12) (actual time=7.767..131.890 rows=814694 loops=1)
+                Index Cond: (slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+                Filter: ((status)::text = 'COMPLETED'::text)
+                Rows Removed by Filter: 215022
+                Heap Fetches: 0
+                Buffers: shared hit=7570
+          ->  Hash  (cost=18785.00..18785.00 rows=800000 width=11) (actual time=182.442..182.444 rows=800000 loops=1)
+                Buckets: 262144  Batches: 8  Memory Usage: 6321kB
+                Buffers: shared hit=32 read=10753, temp written=2702
+                ->  Seq Scan on patients p  (cost=0.00..18785.00 rows=800000 width=11) (actual time=0.073..84.620 rows=800000 loops=1)
+                      Buffers: shared hit=32 read=10753
+  ->  HashAggregate  (cost=29256.78..29956.78 rows=40000 width=72) (actual time=1115.242..1115.491 rows=36 loops=1)
+        Group Key: CASE WHEN (visits.age_at_visit < '18 years'::interval) THEN '0-17'::text WHEN (visits.age_at_visit < '40 years'::interval) THEN '18-39'::text WHEN (visits.age_at_visit < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END, COALESCE(visits.blood_group, 'unknown'::character varying)
+        Batches: 1  Memory Usage: 1561kB
+        Buffers: shared hit=7602 read=10753, temp read=5497 written=8373
+        ->  CTE Scan on visits  (cost=0.00..22987.47 rows=835908 width=64) (actual time=191.274..1013.488 rows=814694 loops=1)
+              Buffers: shared hit=7602 read=10753, temp read=5497 written=8373
+Planning:
+  Buffers: shared hit=382
+Planning Time: 0.841 ms
+JIT:
+  Functions: 17
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 0.560 ms, Inlining 0.000 ms, Optimization 0.469 ms, Emission 7.355 ms, Total 8.384 ms
+Execution Time: 1134.155 ms
+=== R17 run 3 ===
+Sort  (cost=138868.82..138968.82 rows=40000 width=72) (actual time=1097.295..1097.301 rows=36 loops=1)
+  Sort Key: (CASE WHEN (visits.age_at_visit < '18 years'::interval) THEN '0-17'::text WHEN (visits.age_at_visit < '40 years'::interval) THEN '18-39'::text WHEN (visits.age_at_visit < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(visits.blood_group, 'unknown'::character varying))
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=7637 read=10721, temp read=5497 written=8373
+  CTE visits
+    ->  Hash Join  (cost=32692.43..105854.50 rows=835908 width=19) (actual time=180.062..811.638 rows=814694 loops=1)
+          Hash Cond: (a.patient_id = p.patient_id)
+          Buffers: shared hit=7634 read=10721, temp read=5497 written=5497
+          ->  Index Only Scan using ix_appt_slot_cover on appointments a  (cost=0.43..50538.15 rows=835908 width=12) (actual time=7.992..119.106 rows=814694 loops=1)
+                Index Cond: (slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone)
+                Filter: ((status)::text = 'COMPLETED'::text)
+                Rows Removed by Filter: 215022
+                Heap Fetches: 0
+                Buffers: shared hit=7570
+          ->  Hash  (cost=18785.00..18785.00 rows=800000 width=11) (actual time=171.061..171.062 rows=800000 loops=1)
+                Buckets: 262144  Batches: 8  Memory Usage: 6321kB
+                Buffers: shared hit=64 read=10721, temp written=2702
+                ->  Seq Scan on patients p  (cost=0.00..18785.00 rows=800000 width=11) (actual time=0.079..79.927 rows=800000 loops=1)
+                      Buffers: shared hit=64 read=10721
+  ->  HashAggregate  (cost=29256.78..29956.78 rows=40000 width=72) (actual time=1097.069..1097.229 rows=36 loops=1)
+        Group Key: CASE WHEN (visits.age_at_visit < '18 years'::interval) THEN '0-17'::text WHEN (visits.age_at_visit < '40 years'::interval) THEN '18-39'::text WHEN (visits.age_at_visit < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END, COALESCE(visits.blood_group, 'unknown'::character varying)
+        Batches: 1  Memory Usage: 1561kB
+        Buffers: shared hit=7634 read=10721, temp read=5497 written=8373
+        ->  CTE Scan on visits  (cost=0.00..22987.47 rows=835908 width=64) (actual time=180.070..989.594 rows=814694 loops=1)
+              Buffers: shared hit=7634 read=10721, temp read=5497 written=8373
+Planning:
+  Buffers: shared hit=382
+Planning Time: 0.814 ms
+JIT:
+  Functions: 17
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 0.560 ms, Inlining 0.000 ms, Optimization 0.427 ms, Emission 7.615 ms, Total 8.603 ms
+Execution Time: 1114.804 ms

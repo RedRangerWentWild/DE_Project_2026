@@ -1,0 +1,33 @@
+=== W04 run 1 ===
+Update on appointments  (cost=0.29..1598.43 rows=0 width=0) (actual time=106.468..106.468 rows=0 loops=1)
+  Buffers: shared hit=102211 read=10980 dirtied=12767 written=3439
+  ->  Index Scan using ix_appt_open_slot_end on appointments  (cost=0.29..1598.43 rows=7063 width=48) (actual time=0.026..7.125 rows=6239 loops=1)
+        Index Cond: (slot_end < '2026-07-02 00:00:00+05:30'::timestamp with time zone)
+        Filter: ((consult_ended_at IS NULL) AND ((status)::text = ANY ('{BOOKED,CHECKED_IN}'::text[])))
+        Buffers: shared hit=5384 read=245 written=157
+Planning:
+  Buffers: shared hit=211
+Planning Time: 0.443 ms
+Execution Time: 106.506 ms
+=== W04 run 2 ===
+Update on appointments  (cost=0.29..1598.43 rows=0 width=0) (actual time=90.893..90.893 rows=0 loops=1)
+  Buffers: shared hit=114426 read=5290 dirtied=5288 written=1996
+  ->  Index Scan using ix_appt_open_slot_end on appointments  (cost=0.29..1598.43 rows=7063 width=48) (actual time=0.025..7.261 rows=6239 loops=1)
+        Index Cond: (slot_end < '2026-07-02 00:00:00+05:30'::timestamp with time zone)
+        Filter: ((consult_ended_at IS NULL) AND ((status)::text = ANY ('{BOOKED,CHECKED_IN}'::text[])))
+        Buffers: shared hit=5525 read=100 dirtied=98 written=41
+Planning:
+  Buffers: shared hit=210 read=1 written=1
+Planning Time: 0.463 ms
+Execution Time: 90.931 ms
+=== W04 run 3 ===
+Update on appointments  (cost=0.29..1598.43 rows=0 width=0) (actual time=107.658..107.659 rows=0 loops=1)
+  Buffers: shared hit=128041 read=6869 dirtied=6872 written=3283
+  ->  Index Scan using ix_appt_open_slot_end on appointments  (cost=0.29..1598.43 rows=7063 width=48) (actual time=0.024..7.329 rows=6239 loops=1)
+        Index Cond: (slot_end < '2026-07-02 00:00:00+05:30'::timestamp with time zone)
+        Filter: ((consult_ended_at IS NULL) AND ((status)::text = ANY ('{BOOKED,CHECKED_IN}'::text[])))
+        Buffers: shared hit=5586 read=39 dirtied=38 written=33
+Planning:
+  Buffers: shared hit=211
+Planning Time: 0.447 ms
+Execution Time: 107.697 ms

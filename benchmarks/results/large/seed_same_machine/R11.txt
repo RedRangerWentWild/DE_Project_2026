@@ -1,0 +1,100 @@
+=== R11 run 1 ===
+Nested Loop Anti Join  (cost=1.13..3543.50 rows=331 width=16) (actual time=0.059..3.046 rows=430 loops=1)
+  Buffers: shared hit=3279
+  ->  Nested Loop  (cost=0.71..3308.61 rows=496 width=24) (actual time=0.044..1.516 rows=430 loops=1)
+        Buffers: shared hit=1989
+        ->  Index Scan using ix_presc_followup on prescriptions p  (cost=0.29..27.61 rows=496 width=12) (actual time=0.023..0.291 rows=430 loops=1)
+              Index Cond: ((follow_up_date >= '2026-07-01'::date) AND (follow_up_date <= '2026-07-07'::date))
+              Buffers: shared hit=269
+        ->  Index Scan using appointments_pkey on appointments a  (cost=0.42..6.61 rows=1 width=20) (actual time=0.002..0.002 rows=1 loops=430)
+              Index Cond: (appointment_id = p.appointment_id)
+              Buffers: shared hit=1720
+  ->  Index Only Scan using ix_appt_patient on appointments f  (cost=0.42..0.47 rows=1 width=16) (actual time=0.003..0.003 rows=0 loops=430)
+        Index Cond: ((patient_id = a.patient_id) AND (doctor_id = a.doctor_id) AND (slot_start > a.slot_start))
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Heap Fetches: 0
+        Buffers: shared hit=1290
+Planning:
+  Buffers: shared hit=491
+Planning Time: 1.498 ms
+Execution Time: 3.129 ms
+=== R11 run 2 ===
+Nested Loop Anti Join  (cost=1.13..3543.50 rows=331 width=16) (actual time=0.035..1.935 rows=430 loops=1)
+  Buffers: shared hit=3279
+  ->  Nested Loop  (cost=0.71..3308.61 rows=496 width=24) (actual time=0.027..0.948 rows=430 loops=1)
+        Buffers: shared hit=1989
+        ->  Index Scan using ix_presc_followup on prescriptions p  (cost=0.29..27.61 rows=496 width=12) (actual time=0.014..0.197 rows=430 loops=1)
+              Index Cond: ((follow_up_date >= '2026-07-01'::date) AND (follow_up_date <= '2026-07-07'::date))
+              Buffers: shared hit=269
+        ->  Index Scan using appointments_pkey on appointments a  (cost=0.42..6.61 rows=1 width=20) (actual time=0.001..0.001 rows=1 loops=430)
+              Index Cond: (appointment_id = p.appointment_id)
+              Buffers: shared hit=1720
+  ->  Index Only Scan using ix_appt_patient on appointments f  (cost=0.42..0.47 rows=1 width=16) (actual time=0.002..0.002 rows=0 loops=430)
+        Index Cond: ((patient_id = a.patient_id) AND (doctor_id = a.doctor_id) AND (slot_start > a.slot_start))
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Heap Fetches: 0
+        Buffers: shared hit=1290
+Planning:
+  Buffers: shared hit=491
+Planning Time: 0.962 ms
+Execution Time: 1.987 ms
+=== R11 run 3 ===
+Nested Loop Anti Join  (cost=1.13..3543.50 rows=331 width=16) (actual time=0.038..2.061 rows=430 loops=1)
+  Buffers: shared hit=3279
+  ->  Nested Loop  (cost=0.71..3308.61 rows=496 width=24) (actual time=0.028..1.011 rows=430 loops=1)
+        Buffers: shared hit=1989
+        ->  Index Scan using ix_presc_followup on prescriptions p  (cost=0.29..27.61 rows=496 width=12) (actual time=0.014..0.185 rows=430 loops=1)
+              Index Cond: ((follow_up_date >= '2026-07-01'::date) AND (follow_up_date <= '2026-07-07'::date))
+              Buffers: shared hit=269
+        ->  Index Scan using appointments_pkey on appointments a  (cost=0.42..6.61 rows=1 width=20) (actual time=0.002..0.002 rows=1 loops=430)
+              Index Cond: (appointment_id = p.appointment_id)
+              Buffers: shared hit=1720
+  ->  Index Only Scan using ix_appt_patient on appointments f  (cost=0.42..0.47 rows=1 width=16) (actual time=0.002..0.002 rows=0 loops=430)
+        Index Cond: ((patient_id = a.patient_id) AND (doctor_id = a.doctor_id) AND (slot_start > a.slot_start))
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Heap Fetches: 0
+        Buffers: shared hit=1290
+Planning:
+  Buffers: shared hit=491
+Planning Time: 0.904 ms
+Execution Time: 2.113 ms
+=== R11 run 4 ===
+Nested Loop Anti Join  (cost=1.13..3543.50 rows=331 width=16) (actual time=0.034..1.860 rows=430 loops=1)
+  Buffers: shared hit=3279
+  ->  Nested Loop  (cost=0.71..3308.61 rows=496 width=24) (actual time=0.025..0.861 rows=430 loops=1)
+        Buffers: shared hit=1989
+        ->  Index Scan using ix_presc_followup on prescriptions p  (cost=0.29..27.61 rows=496 width=12) (actual time=0.014..0.179 rows=430 loops=1)
+              Index Cond: ((follow_up_date >= '2026-07-01'::date) AND (follow_up_date <= '2026-07-07'::date))
+              Buffers: shared hit=269
+        ->  Index Scan using appointments_pkey on appointments a  (cost=0.42..6.61 rows=1 width=20) (actual time=0.001..0.001 rows=1 loops=430)
+              Index Cond: (appointment_id = p.appointment_id)
+              Buffers: shared hit=1720
+  ->  Index Only Scan using ix_appt_patient on appointments f  (cost=0.42..0.47 rows=1 width=16) (actual time=0.002..0.002 rows=0 loops=430)
+        Index Cond: ((patient_id = a.patient_id) AND (doctor_id = a.doctor_id) AND (slot_start > a.slot_start))
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Heap Fetches: 0
+        Buffers: shared hit=1290
+Planning:
+  Buffers: shared hit=491
+Planning Time: 0.875 ms
+Execution Time: 1.908 ms
+=== R11 run 5 ===
+Nested Loop Anti Join  (cost=1.13..3543.50 rows=331 width=16) (actual time=0.033..1.821 rows=430 loops=1)
+  Buffers: shared hit=3279
+  ->  Nested Loop  (cost=0.71..3308.61 rows=496 width=24) (actual time=0.025..0.869 rows=430 loops=1)
+        Buffers: shared hit=1989
+        ->  Index Scan using ix_presc_followup on prescriptions p  (cost=0.29..27.61 rows=496 width=12) (actual time=0.013..0.171 rows=430 loops=1)
+              Index Cond: ((follow_up_date >= '2026-07-01'::date) AND (follow_up_date <= '2026-07-07'::date))
+              Buffers: shared hit=269
+        ->  Index Scan using appointments_pkey on appointments a  (cost=0.42..6.61 rows=1 width=20) (actual time=0.001..0.001 rows=1 loops=430)
+              Index Cond: (appointment_id = p.appointment_id)
+              Buffers: shared hit=1720
+  ->  Index Only Scan using ix_appt_patient on appointments f  (cost=0.42..0.47 rows=1 width=16) (actual time=0.002..0.002 rows=0 loops=430)
+        Index Cond: ((patient_id = a.patient_id) AND (doctor_id = a.doctor_id) AND (slot_start > a.slot_start))
+        Filter: ((status)::text <> 'CANCELLED'::text)
+        Heap Fetches: 0
+        Buffers: shared hit=1290
+Planning:
+  Buffers: shared hit=491
+Planning Time: 0.868 ms
+Execution Time: 1.866 ms
