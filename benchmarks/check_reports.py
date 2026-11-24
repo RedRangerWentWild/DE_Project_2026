@@ -14,7 +14,14 @@ recomputes each number from the files it came from:
                                   file); the indexes-only comparison; write overhead, from
                                   the plans and the pgbench and refresh logs; index sizes;
                                   the rejected rewrites; which queries each index serves
-  README.md                       our headline numbers
+  docs/05_scalability_report.md   section 2, the large dataset: the runs and averages of
+                                  large/ and large/seed_same_machine/; the results table,
+                                  targets and growth; the growth groups and the rows,
+                                  workers and plan facts they quote; the quoted plans; the
+                                  JIT times; storage and B-tree depth (large/sizes.txt);
+                                  the R22 bookmark (large/r22_bookmark.txt); and that
+                                  large/workload_large.sql is sql/06 with only that changed
+  README.md                       our headline numbers, and the Phase 5 line
 
     python3 benchmarks/check_reports.py
 
@@ -402,6 +409,293 @@ def check_readme(c, base, opt):
     c.done()
 
 
+LARGE, SEED_HERE = 'large', 'large/seed_same_machine'   # Phase 5: the large run, and the seed run on its machine
+TARGET = dict([(q, 5) for q in GROUPS['real-time screen']] + [(q, 250) for q in GROUPS['interactive query']]
+              + [(q, 5000) for q in GROUPS['report']] + [('W04', 1000)])
+SCAN = re.compile(r'(?:Parallel )?(?:Seq Scan|Index Scan|Index Only Scan|Bitmap Heap Scan)(?: Backward)?'
+                  r'(?: using \w+)? on (\w+)[^\n]*?actual time=[\d.]+\.\.[\d.]+ rows=(\d+) loops=(\d+)')
+PLAN_FACT = re.compile(r'^(Rows Removed by Filter: \d+|Batches: \d+|Memory Usage: \d+kB|Disk: \d+kB|'
+                       r'Total [\d.]+ ms|loops=\d+)$')
+
+
+def subsection(text, heading):
+    """The text of one '### ' subsection, up to the next heading."""
+    start = text.index('\n### ' + heading)
+    m = re.search(r'\n#{2,3} ', text[start + 1:])
+    return text[start:start + 1 + m.start()] if m else text[start:]
+
+
+def scan_rows(plan, table):
+    """Rows returned by every scan of a table in a plan (rows x loops, summed)."""
+    return sum(int(r) * int(l) for t, r, l in SCAN.findall(plan) if t == table)
+
+
+def workers(plan):
+    return max([int(x) for x in re.findall(r'Workers Launched: (\d+)', plan)] or [0])
+
+
+def top_rows(plan):
+    return int(re.search(r'actual time=[\d.]+\.\.[\d.]+ rows=(\d+)', plan).group(1))
+
+
+def in_plan(fact, plan):
+    return re.search(re.escape(fact) + r'(?![\d.])', plan) is not None
+
+
+def read_sizes():
+    """large/sizes.txt, for 'LARGE' and 'SEED': tables, totals, Phase 4 objects and B-tree levels."""
+    out = {}
+    for part in (RESULTS / LARGE / 'sizes.txt').read_text().split('\n########## ')[1:]:
+        d, header = {'tables': {}, 'objects': {}, 'levels': {}}, None
+        for line in part.splitlines():
+            cells = [x.strip() for x in line.split('|')]
+            if len(cells) < 3:
+                continue
+            if cells[0] in ('table', 'tables_bytes', 'object', 'phase4_objects_total', 'on_table'):
+                header = cells[0]
+            elif header == 'table':
+                d['tables'][cells[0]] = dict(zip(('kind', 'rows', 'bytes', 'size', 'index_bytes', 'index_size'),
+                                                 [cells[1], int(cells[2]), int(cells[3]), cells[4], int(cells[5]), cells[6]]))
+            elif header == 'tables_bytes':
+                d['totals'] = dict(zip(('tables_bytes', 'tables', 'indexes_bytes', 'indexes', 'summary_bytes', 'summary',
+                                        'db_bytes', 'db'), cells))
+            elif header == 'object':
+                d['objects'][cells[0]] = dict(kind=cells[1], on=cells[2], bytes=int(cells[3]), size=cells[4])
+            elif header == 'phase4_objects_total':
+                d['p4'] = dict(zip(('total', 'indexes', 'summary'), cells))
+            elif header == 'on_table':
+                d['levels'][cells[1]] = int(cells[2])
+        out[part.split()[0]] = d
+    return out
+
+
+def check_scalability(c, opt):
+    """docs/05 section 2 against benchmarks/results/large/."""
+    text = (ROOT / 'docs' / '05_scalability_report.md').read_text()
+    sec = section(text, '2. Measured on the large dataset')
+    big, here = summary(LARGE), summary(SEED_HERE)
+    growth = {q: float(big[q]['avg_ms']) / float(here[q]['avg_ms']) for q in IDS}
+    total = lambda s: sum(float(s[q]['avg_ms']) for q in IDS)
+    plan_large = lambda q: run_text(LARGE, q, 3)
+    plan_seed = lambda q: run_text(SEED_HERE, q, 5)
+    size = read_sizes()
+    L, S = size['LARGE'], size['SEED']
+    times = lambda b: '%.1fx' % b
+    mb = lambda s: s.replace(',', '')
+
+    c.section('docs/05: the runs behind section 2')
+    for phase, n in ((LARGE, 3), (SEED_HERE, 5)):
+        s = summary(phase)
+        for q in IDS:
+            r = runs(phase, q)
+            c.equal('%s/%s number of runs' % (phase, q), len(r), n)
+            c.equal('%s/%s average' % (phase, q), s[q]['avg_ms'], avg([float(x) for x in r]))
+    # the workload: sql/06 with the R22 bookmark taken from the large data, nothing else
+    split = lambda t: dict(re.findall(r'^-- @([RW]\d\d)\n(.*?)(?=^-- @)', t, re.S | re.M))
+    body = lambda sql: [l for l in sql.splitlines() if not l.startswith('--')]
+    ours, given = (split(p.read_text()) for p in (RESULTS / LARGE / 'workload_large.sql', ROOT / 'sql' / '06_optimized_queries.sql'))
+    c.equal('workload_large.sql queries', sorted(ours), IDS)
+    for q in IDS:
+        diff = [(a, b) for a, b in zip(body(ours[q]), body(given[q])) if a != b]
+        c.true('workload_large.sql %s' % q, len(body(ours[q])) == len(body(given[q])) and len(diff) == (q == 'R22'),
+               'differs from sql/06_optimized_queries.sql' if q != 'R22' else 'should differ in the bookmark line only')
+    bm = (RESULTS / LARGE / 'r22_bookmark.txt').read_text()
+    mark = re.search(r'^ (\S+ \S+) \|\s+(\d+)\s*$', bm, re.M)
+    c.true('workload_large.sql R22 bookmark', "(TIMESTAMPTZ '%s', %s)" % mark.groups() in ours['R22'],
+           'is not the row in r22_bookmark.txt')
+    c.done()
+
+    c.section('docs/05: results table and headline (sections 1, 2, 2.1, 2.2)')
+    m = re.search(r'This machine is (\d+)% faster: ([\d.]+) ms for the 30 queries, against ([\d.]+) ms in Phase 4', sec)
+    c.equal('docs/05 2.1 same-machine total', m.group(2), f3(total(here)))
+    c.equal('docs/05 2.1 Phase 4 total', m.group(3), f3(total(opt)))
+    c.equal('docs/05 2.1 faster by', m.group(1), '%d' % round((1 - total(here) / total(opt)) * 100))
+    names = {'appointments': 'appointments', 'prescription items': 'prescription_items', 'prescriptions': 'prescriptions',
+             'patients': 'patients', 'doctor schedules': 'doctor_schedules', 'reviews': 'doctor_reviews',
+             'doctors': 'doctors', 'clinics': 'clinics'}
+    data = re.search(r'\*\*Data\.\*\*.*', sec).group(0)
+    for n, what in re.findall(r'([\d,]+) (prescription items|doctor schedules|appointments|prescriptions|patients|'
+                              r'reviews|doctors|clinics)\b', data):
+        c.equal('docs/05 2.1 rows of %s' % what, mb(n), str(L['tables'][names[what]]['rows']))
+    groups = {'real-time': GROUPS['real-time screen'], 'interactive': GROUPS['interactive query'],
+              'report': GROUPS['report'], 'batch': ['W04']}
+    for label, qid, value, target in re.findall(r'(real-time|interactive|report|batch) ([RW]\d\d), ([\d,.]+) ms '
+                                                r'\(target ([\d,]+) ms\)', sec):
+        slowest = max(groups[label], key=lambda q: float(big[q]['avg_ms']))
+        c.equal('docs/05 2 slowest %s' % label, (qid, num(value), mb(target)),
+                (slowest, big[slowest]['avg_ms'], str(TARGET[slowest])))
+    rows = table_rows(subsection(sec, '2.2'), r'^([RW]\d\d)$')
+    c.equal('docs/05 results table', 'rows %d' % len(rows), 'rows %d' % len(IDS))
+    for m, cells in rows:
+        q = m.group(1)
+        c.equal('docs/05 %s seed, Phase 4' % q, num(cells[2]), opt[q]['avg_ms'])
+        c.equal('docs/05 %s seed, same machine' % q, num(cells[3]), here[q]['avg_ms'])
+        c.equal('docs/05 %s large' % q, num(cells[4]), big[q]['avg_ms'])
+        c.equal('docs/05 %s growth' % q, cells[5], times(growth[q]))
+        c.equal('docs/05 %s target' % q, mb(re.search(r'< ([\d,]+) ms', cells[1]).group(1)), str(TARGET[q]))
+        c.equal('docs/05 %s meets target' % q, cells[6], 'Yes' if float(big[q]['avg_ms']) < TARGET[q] else 'No')
+    cells = table_rows(sec, r'^\*\*Total of the 30\*\*$')[0][1]
+    c.equal('docs/05 total', [num(x) for x in cells[2:6]],
+            [f3(total(opt)), f3(total(here)), f3(total(big)), times(total(big) / total(here))])
+    m = re.search(r'the total of the 30 average times grew ([\d.]+x) on the same machine \(([\d.,]+) ms → ([\d.,]+) ms\); '
+                  r'the slowest query is ([RW]\d\d), at ([\d.,]+) ms of its ([\d,]+) ms target', text)
+    worst = max(IDS, key=lambda q: float(big[q]['avg_ms']))
+    c.equal('docs/05 1 headline', (m.group(1), num(m.group(2)), num(m.group(3)), m.group(4), num(m.group(5)), mb(m.group(6))),
+            (times(total(big) / total(here)), f3(total(here)), f3(total(big)), worst, big[worst]['avg_ms'], str(TARGET[worst])))
+    m = re.search(r'every real-time screen answers in under 1 ms \(the slowest, ([RW]\d\d), in ([\d.]+) ms\)', text)
+    slowest = max(GROUPS['real-time screen'], key=lambda q: float(big[q]['avg_ms']))
+    c.equal('docs/05 6 slowest real-time', m.groups(), (slowest, big[slowest]['avg_ms']))
+    c.true('docs/05 6 real-time under 1 ms', float(big[slowest]['avg_ms']) < 1, 'it is not under 1 ms')
+    m = re.search(r'all 30 optimized queries meet their targets with no change to any index or query; the slowest, '
+                  r'([RW]\d\d), takes ([\d,.]+) ms of its ([\d,]+) ms', (ROOT / 'README.md').read_text())
+    c.equal('README Phase 5 slowest', (m.group(1), num(m.group(2)), mb(m.group(3))), (worst, big[worst]['avg_ms'], str(TARGET[worst])))
+    c.true('Phase 5 every target met', all(float(big[q]['avg_ms']) < TARGET[q] for q in IDS), 'a query misses its target')
+    # parameters picked on the seed data: rows found on each data set
+    for q, large_n, seed_n in re.findall(r'(R\d\d) (?:returns )?(\d+)(?: rows)? instead of (\d+)', sec):
+        c.equal('docs/05 2.2 rows of %s' % q, (large_n, seed_n), (str(top_rows(plan_large(q))), str(top_rows(plan_seed(q)))))
+    m = re.search(r'W03 and W05 change (\d+) rows instead of (\d+) and (\d+)', sec)
+    c.equal('docs/05 2.2 rows W03 and W05 change',
+            (m.group(1), m.group(1), m.group(2), m.group(3)),
+            tuple(str(scan_rows(p(q), t)) for p, q, t in ((plan_large, 'W03', 'prescriptions'), (plan_large, 'W05', 'appointments'),
+                                                          (plan_seed, 'W03', 'prescriptions'), (plan_seed, 'W05', 'appointments'))))
+    c.done()
+
+    c.section('docs/05: growth analysis (section 2.3)')
+    sub = subsection(sec, '2.3')
+    seen = []
+    for chunk in sub.split('\n**')[1:]:
+        m = re.match(r'([^,]+(?:, but less than 20x)?), ([\d.]+)x to ([\d.]+)x([^*]*)\.\*\*', chunk)
+        if not m:
+            continue
+        ids = re.findall(r'[RW]\d\d', m.group(4)) or [r[0].group(1) for r in table_rows(chunk, r'^([RW]\d\d)$')]
+        seen += ids
+        c.equal('docs/05 2.3 range "%s"' % m.group(1), (m.group(2), m.group(3)),
+                ('%.1f' % min(growth[q] for q in ids), '%.1f' % max(growth[q] for q in ids)))
+    c.equal('docs/05 2.3 every query in one group', sorted(seen), IDS)
+    for m, cells in table_rows(sub, r'^([RW]\d\d)$'):
+        q = m.group(1)
+        c.equal('docs/05 2.3 %s growth' % q, cells[1], times(growth[q]))
+        for table, a, b in re.findall(r'`(\w+)`: ([\d,]+) → ([\d,]+)', cells[2]):
+            c.equal('docs/05 2.3 %s rows of %s' % (q, table), (mb(a), mb(b)),
+                    (str(scan_rows(plan_seed(q), table)), str(scan_rows(plan_large(q), table))))
+        w = re.match(r'(\d+) → (\d+)$', cells[3])
+        c.equal('docs/05 2.3 %s workers' % q, w.groups(), (str(workers(plan_seed(q))), str(workers(plan_large(q)))))
+        pairs = re.findall(r'`([^`]+)` → `([^`]+)`', cells[4])
+        for a, b in pairs:
+            c.true('docs/05 2.3 %s' % q, in_plan(a, plan_seed(q)), '"%s" is not in run 5 of the seed plan' % a)
+            c.true('docs/05 2.3 %s' % q, in_plan(b, plan_large(q)), '"%s" is not in run 3 of the large plan' % b)
+        for fact in re.findall(r'`([^`]+)`', re.sub(r'`[^`]+` → `[^`]+`', '', cells[4])):
+            if PLAN_FACT.match(fact):
+                c.true('docs/05 2.3 %s' % q, in_plan(fact, plan_large(q)), '"%s" is not in run 3 of the large plan' % fact)
+    m = re.search(r'\(((?:`\w+`(?:, )?)+)\) have (\d+) levels on both data sets', sub)
+    for name in re.findall(r'`(\w+)`', m.group(1)):
+        c.equal('docs/05 2.3 levels of %s' % name, (S['levels'][name], L['levels'][name]), (int(m.group(2)),) * 2)
+    m = re.search(r'((?:`\w+`(?:, | and ))*`\w+`) went from (\d+) levels to (\d+)', sub)
+    for name in re.findall(r'`(\w+)`', m.group(1)):
+        c.equal('docs/05 2.3 levels of %s' % name, (S['levels'][name], L['levels'][name]), (int(m.group(2)), int(m.group(3))))
+    c.true('docs/05 2.3 at most one level more', all(L['levels'][i] - S['levels'][i] <= 1 for i in S['levels']),
+           'an index grew by more than one level')
+    m = re.search(r'R15 reads (\d+) rows of `(\w+)`, which has ([\d,]+) rows on both data sets', sub)
+    c.equal('docs/05 2.3 R15', (m.group(1), m.group(1), mb(m.group(3)), mb(m.group(3))),
+            (str(scan_rows(plan_seed('R15'), m.group(2))), str(scan_rows(plan_large('R15'), m.group(2))),
+             str(S['tables'][m.group(2)]['rows']), str(L['tables'][m.group(2)]['rows'])))
+    m = re.search(r'\(R22 after (\d+), W02 after (\d+)\)', sub)
+    c.equal('docs/05 2.3 R22 and W02 stop after', m.groups(),
+            (str(top_rows(plan_large('R22'))),
+             re.search(r'Index Only Scan using ix_appt_slot_cover on appointments[^\n]*rows=(\d+) loops=1', plan_large('W02')).group(1)))
+    c.done()
+
+    c.section('docs/05: what changed at scale, R22 (sections 2.4, 2.5)')
+    sub = subsection(sec, '2.4')
+    for folder, q, n, block in re.findall(r'`([\w_]+)/([RW]\d\d)\.txt`, run (\d+):\n```\n(.*?)```', sub, re.S):
+        plan = run_text(LARGE if folder == 'large' else 'large/' + folder, q, int(n))
+        for line in block.strip().splitlines():
+            c.true('docs/05 2.4 %s/%s run %s' % (folder, q, n), line.strip() in plan, 'quotes a line not in the plan: ' + line.strip())
+    m = re.search(r'At ([\d,.]+) ms (R\d\d) uses half of its ([\d,]+) ms target, the most of any query', sub)
+    share = {q: float(big[q]['avg_ms']) / TARGET[q] for q in IDS}
+    c.equal('docs/05 2.4 R24', (num(m.group(1)), mb(m.group(3))), (big[m.group(2)]['avg_ms'], str(TARGET[m.group(2)])))
+    c.true('docs/05 2.4 R24 share', max(share, key=share.get) == m.group(2) and 0.45 <= share[m.group(2)] < 0.55,
+           'is not the query with the largest share of its target, or not about half')
+    jit = re.search(r'part of their Execution Time: (.*?) \(run 3 of each\)', sub).group(1)
+    named = re.findall(r'([RW]\d\d) ([\d.]+) ms', jit)
+    for q, t in named:
+        c.true('docs/05 2.4 JIT %s' % q, in_plan('Total %s ms' % t, plan_large(q)), 'JIT time is not that of run 3')
+    with_jit = [q for q in IDS if 'JIT:' in (RESULTS / LARGE / ('%s.txt' % q)).read_text()]
+    c.equal('docs/05 2.4 large plans with JIT', sorted(q for q, t in named), with_jit)
+    c.true('docs/05 2.4 no JIT on the seed data', not any('JIT:' in (RESULTS / p / ('%s.txt' % q)).read_text()
+                                                         for p in ('optimized', SEED_HERE) for q in IDS),
+           'an optimized seed plan uses JIT')
+    c.true('docs/05 2.4 memory', 'Batches: 8' in plan_large('R17') and 'R17 is split into 8 batches' in sub
+           and all('external merge' in plan_large(q) for q in ('R24', 'R25'))
+           and not any(re.search(r'Disk: |Batches: (?!1\b)\d', plan_seed(q)) for q in ('R17', 'R24', 'R25')),
+           'the batches and sorts on disk are not as stated')
+    m = re.search(r'the whole seed database \((\d+) MB\) but a small part of the large one \(([\d,]+) MB\)', sub)
+    c.equal('docs/05 2.4 database sizes', (m.group(1) + ' MB', mb(m.group(2)) + ' MB'), (S['totals']['db'], L['totals']['db']))
+    first_buffers = lambda plan: re.search(r'Buffers: [^\n]*', plan).group(0)
+    for q in re.search(r'(R\d\d), (R\d\d) and (R\d\d) now read pages from outside it', sub).groups():
+        c.true('docs/05 2.4 %s reads' % q, 'read=' in first_buffers(plan_large(q)) and 'read=' not in first_buffers(plan_seed(q)),
+               'does not read outside shared buffers on the large data only')
+    sub = subsection(sec, '2.5')
+    before = int(re.search(r'^\s+(\d+)\s*$', bm.split('rows_before_seed_bookmark')[1], re.M).group(1))
+    check = re.search(r'^\s+(\d+) \|\s+(\d+) \|\s+(\d+) \|\s+(\d+)\s*$', bm, re.M).groups()
+    m = re.search(r'-- \((\S+ \S+), (\d+)\)', sub)
+    c.equal('docs/05 2.5 bookmark', m.groups(), mark.groups())
+    m = re.search(r'and ([\d,]+) large-data rows come before it: reused, it would show rows ([\d,]+) to ([\d,]+)', sub)
+    c.equal('docs/05 2.5 seed bookmark', tuple(mb(x) for x in m.groups()), (str(before), str(before + 1), str(before + 25)))
+    c.true('docs/05 2.5 seed bookmark not a row', re.search(r'seed_bookmark_rows\s*\n-+\n\s+0\s*$', bm, re.M) is not None,
+           'r22_bookmark.txt does not say 0 rows')
+    m = re.search(r'\((\d+) rows differ\), in ([\d.]+) ms: it reads (\d+) index entries', sub)
+    c.equal('docs/05 2.5 check', (check[0], check[1], str(int(check[2]) + int(check[3])), m.group(1)), ('25', '25', m.group(1), '0'))
+    c.equal('docs/05 2.5 R22', (m.group(2), m.group(3)), (big['R22']['avg_ms'], str(scan_rows(plan_large('R22'), 'appointments'))))
+    c.done()
+
+    c.section('docs/05: storage (section 2.6)')
+    sub = subsection(sec, '2.6')
+    t = lambda d, name: d['tables'][name]
+    p4 = lambda d: (sum(o['bytes'] for n, o in d['objects'].items() if n.startswith('ix_')),
+                    sum(o['bytes'] for n, o in d['objects'].items() if not n.startswith('ix_')))
+    expect = {
+        'Database': ((S['totals']['db'], L['totals']['db']), (int(S['totals']['db_bytes']), int(L['totals']['db_bytes']))),
+        'The 11 tables': ((S['totals']['tables'], L['totals']['tables']),
+                          (int(S['totals']['tables_bytes']), int(L['totals']['tables_bytes']))),
+        'Their indexes': ((S['totals']['indexes'], L['totals']['indexes']),
+                          (int(S['totals']['indexes_bytes']), int(L['totals']['indexes_bytes']))),
+        '`appointments`': ((t(S, 'appointments')['size'], t(L, 'appointments')['size']),
+                           (t(S, 'appointments')['bytes'], t(L, 'appointments')['bytes'])),
+        'Indexes on `appointments`': ((t(S, 'appointments')['index_size'], t(L, 'appointments')['index_size']),
+                                      (t(S, 'appointments')['index_bytes'], t(L, 'appointments')['index_bytes'])),
+        'The 7 Phase 4 indexes': ((S['p4']['indexes'], L['p4']['indexes']), (p4(S)[0], p4(L)[0])),
+        'The 2 summary tables, with their indexes': ((S['p4']['summary'], L['p4']['summary']), (p4(S)[1], p4(L)[1])),
+    }
+    rows = table_rows(sub, r'^(Database|The 11 tables|Their indexes|`appointments`|Indexes on `appointments`|'
+                           r'The 7 Phase 4 indexes|The 2 summary tables, with their indexes)$')
+    c.equal('docs/05 2.6 storage rows', sorted(m.group(1) for m, _ in rows), sorted(expect))
+    for m, cells in rows:
+        pretty, raw = expect[m.group(1)]
+        c.equal('docs/05 2.6 %s' % m.group(1), (mb(cells[1]), mb(cells[2]), cells[3]), pretty + (times(raw[1] / raw[0]),))
+    ratio = lambda d: '%.1f' % (t(d, 'appointments')['index_bytes'] / t(d, 'appointments')['bytes'])
+    m = re.search(r'the indexes on `appointments` are ([\d.]+)x the size of the table on both data sets', sub)
+    c.equal('docs/05 2.6 index to table', (m.group(1),) * 2, (ratio(S), ratio(L)))
+    m = re.search(r'The summary tables grew ([\d.]+x) because one of them, the month × specialization × medicine summary, '
+                  r'does not grow at all', sub)
+    mm = 'monthly_medicine_by_specialization'
+    c.equal('docs/05 2.6 summary tables', m.group(1), times(p4(L)[1] / p4(S)[1]))
+    c.equal('docs/05 2.6 %s does not grow' % mm, (t(S, mm)['rows'], t(S, mm)['bytes']), (t(L, mm)['rows'], t(L, mm)['bytes']))
+    m = re.search(r'The database as a whole grew ([\d.]+x), less than its tables and indexes', sub)
+    db, tb, ib = (int(L['totals'][k]) / int(S['totals'][k]) for k in ('db_bytes', 'tables_bytes', 'indexes_bytes'))
+    c.equal('docs/05 2.6 database growth', m.group(1), times(db))
+    c.true('docs/05 2.6 database grew less', db < tb and db < ib, 'the database did not grow less than its tables and indexes')
+    rest = lambda d: int(d['totals']['db_bytes']) - int(d['totals']['tables_bytes']) - int(d['totals']['indexes_bytes']) \
+        - int(d['totals']['summary_bytes'])
+    m = re.search(r"PostgreSQL's own catalogs, about (\d+) MB on both data sets", sub)
+    c.equal('docs/05 2.6 catalogs', (m.group(1),) * 2, tuple('%d' % round(rest(d) / 1048576) for d in (S, L)))
+    m = re.search(r'measured ([\d,]+) bytes, which `pg_size_pretty` prints as (\d+ MB)\) and low for the indexes '
+                  r'\(about 340 MB; measured (\d+ MB) on `appointments` alone and (\d+ MB) on all tables\)', sub)
+    c.equal('docs/05 2.6 estimate', (mb(m.group(1)), m.group(2), m.group(3), m.group(4)),
+            (str(t(L, 'appointments')['bytes']), t(L, 'appointments')['size'], t(L, 'appointments')['index_size'], L['totals']['indexes']))
+    c.done()
+
+
 def main():
     base, opt, idx = summary('baseline'), summary('optimized'), summary('indexes_only')
     base_runs = {q: runs('baseline', q) for q in IDS}
@@ -419,6 +713,7 @@ def main():
     check_storage(c, text, opt)
     check_rejected(c, text, base, opt)
     check_readme(c, base, opt)
+    check_scalability(c, opt)
     for w in c.wrong:
         print('  WRONG ' + w)
     print('%d numbers checked, %s' % (c.checked, 'all match.' if not c.wrong else '%d do not match.' % len(c.wrong)))
